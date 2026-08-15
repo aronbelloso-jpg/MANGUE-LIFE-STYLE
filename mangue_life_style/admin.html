@@ -1,0 +1,31 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin | Mangue Life Style</title><link rel="stylesheet" href="styles.css"><style>
+body{background:#f5f1e8}.wrap{max-width:1100px;margin:auto;padding:25px}.box{background:#fff;padding:25px;border-radius:14px;box-shadow:0 5px 25px #0001;margin:20px 0}label{display:grid;gap:6px;margin:10px 0;font-weight:bold;font-size:13px}input,select{padding:11px;border:1px solid #ddd;border-radius:8px}button{padding:10px 16px;border:0;border-radius:20px;font-weight:bold;cursor:pointer}.gold{background:#d7a622}.danger{background:#e74c3c;color:#fff}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hide{display:none}.head{display:flex;justify-content:space-between;align-items:center}.muted{color:#777}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<div class="box head"><b>MANGUE LIFE STYLE — ADMINISTRACIÓN</b><a href="index.html">Ver tienda</a></div>
+<section id="login" class="box"><h2>Acceso administrador</h2><form id="lf"><label>Usuario<input id="u" required></label><label>Contraseña<input id="pw" type="password" required></label><button class="gold">Entrar</button></form><p id="err" class="muted"></p><small>Demo: usuario <b>admin</b> · contraseña <b>MangueAdmin2026!</b></small></section>
+<section id="app" class="box hide"><div class="head"><h2>Productos</h2><button id="logout">Salir</button></div><button id="new" class="gold">+ Nuevo producto</button><div id="formbox" class="box hide"><h3>Editar producto</h3><form id="pf" class="grid">
+<label>Nombre<input id="name" required></label><label>Precio FCFA<input id="price" type="number" required></label><label>Categoría<select id="cat"><option>Perfumes</option><option>Ropa</option><option>Pelucas</option><option>Zapatos</option><option>Cosméticos</option></select></label><label>Stock<input id="stock" type="number" min="0"></label><label>Imagen<input id="img"></label><label>Oferta<select id="offer"><option value="false">No</option><option value="true">Sí</option></select></label><label style="grid-column:1/-1">Descripción<input id="desc"></label><div><button class="gold">Guardar</button> <button type="button" id="cancel">Cancelar</button></div></form></div>
+<table><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody id="rows"></tbody></table></section></div>
+<script>
+const defaults=[
+{id:1,name:"DIVA 022",cat:"Perfumes",price:18000,stock:0,img:"assets/product-1.jpg",offer:false,desc:"Perfume de equivalencia · Unisex"},
+{id:2,name:"DIVA LIBRE",cat:"Perfumes",price:20000,stock:0,img:"assets/product-2.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
+{id:3,name:"DIVA 767",cat:"Perfumes",price:18000,stock:0,img:"assets/product-3.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
+{id:4,name:"DIVA 883",cat:"Perfumes",price:20000,stock:0,img:"assets/product-4.jpg",offer:false,desc:"Perfume de equivalencia · Unisex"},
+{id:5,name:"DIVA 740",cat:"Perfumes",price:18000,stock:0,img:"assets/product-5.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
+{id:6,name:"Elegance",cat:"Ropa",price:45000,stock:0,img:"assets/banner-moda.jpg",offer:false,desc:"Moda y estilo"},
+{id:7,name:"Glow Beauty",cat:"Cosméticos",price:28000,stock:0,img:"assets/banner-belleza.jpg",offer:false,desc:"Cosméticos"},
+{id:8,name:"Premium Wave",cat:"Pelucas",price:75000,stock:0,img:"assets/banner-pelucas.jpg",offer:false,desc:"Peluca premium"},
+{id:9,name:"Classic Heel",cat:"Zapatos",price:50000,stock:0,img:"assets/banner-moda.jpg",offer:false,desc:"Calzado"}];
+let ps=JSON.parse(localStorage.mangue_products||"null")||defaults,edit=null;
+const $=x=>document.querySelector(x), money=n=>new Intl.NumberFormat("es-GQ").format(n)+" FCFA";
+function render(){$("#rows").innerHTML=ps.map(p=>`<tr><td>${p.name}<br><small>${p.cat}</small></td><td>${money(p.price)}</td><td>${p.stock||0}</td><td><button class="gold" onclick="editP(${p.id})">Editar</button> <button class="danger" onclick="delP(${p.id})">Eliminar</button></td></tr>`).join("");localStorage.mangue_products=JSON.stringify(ps)}
+function editP(id){let p=ps.find(x=>x.id==id);edit=id;["name","price","cat","stock","img","offer","desc"].forEach(k=>$("#"+k).value=p[k]??"");$("#formbox").classList.remove("hide")}
+function delP(id){if(confirm("¿Eliminar producto?")){ps=ps.filter(x=>x.id!=id);render()}}
+$("#lf").onsubmit=e=>{e.preventDefault();if($("#u").value==="admin"&&$("#pw").value==="MangueAdmin2026!"){sessionStorage.a=1;$("#login").classList.add("hide");$("#app").classList.remove("hide");render()}else $("#err").textContent="Datos incorrectos."};
+$("#logout").onclick=()=>{sessionStorage.removeItem("a");location.reload()};
+$("#new").onclick=()=>{edit=null;$("#pf").reset();$("#formbox").classList.remove("hide")};
+$("#cancel").onclick=()=>$("#formbox").classList.add("hide");
+$("#pf").onsubmit=e=>{e.preventDefault();let d={name:$("#name").value,price:+$("#price").value,cat:$("#cat").value,stock:+$("#stock").value||0,img:$("#img").value||"assets/product-1.jpg",offer:$("#offer").value==="true",desc:$("#desc").value};if(edit){Object.assign(ps.find(x=>x.id==edit),d)}else{d.id=Date.now();ps.push(d)}render();$("#formbox").classList.add("hide")};
+if(sessionStorage.a){$("#login").classList.add("hide");$("#app").classList.remove("hide");render()}
+</script></body></html>

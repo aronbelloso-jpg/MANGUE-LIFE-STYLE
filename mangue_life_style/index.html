@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mangue Life Style | Tu estilo. Tu esencia.</title>
+  <meta name="description" content="Mangue Life Style — tienda de perfumes, moda, pelucas, zapatos y cosméticos en Malabo, Guinea Ecuatorial.">
+  <link rel="icon" href="assets/favicon.jpg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <div>📍 Ela nguema detrás del colegio Español, Malabo – Guinea Ecuatorial</div>
+    <div class="top-contact">
+      <a href="tel:+240222725152">+240 222 725 152</a>
+      <a href="tel:+240222034445">+240 222 034 445</a>
+      <a href="tel:+240222648972">+240 222 648 972</a>
+    </div>
+  </div>
+
+  <header class="header">
+    <a class="brand" href="#inicio" aria-label="Mangue Life Style">
+      <img src="assets/logo.jpg" alt="Mangue Life Style">
+    </a>
+    <div class="search-wrap">
+      <input id="searchInput" type="search" placeholder="Buscar productos..." autocomplete="off">
+      <button id="searchBtn" aria-label="Buscar">⌕</button>
+    </div>
+    <div class="header-actions"><a class="admin-link" href="admin.html">Administrar</a>
+      <button id="accountBtn" class="account-btn">♙ <span>Mi cuenta</span></button>
+      <button id="cartBtn" class="cart-btn">🛒 <span id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <nav class="nav" id="mainNav">
+    <a class="active" href="#inicio">Inicio</a>
+    <a href="#catalogo" data-filter="Perfumes">Perfumes</a>
+    <a href="#catalogo" data-filter="Ropa">Ropa</a>
+    <a href="#catalogo" data-filter="Pelucas">Pelucas</a>
+    <a href="#catalogo" data-filter="Zapatos">Zapatos</a>
+    <a href="#catalogo" data-filter="Cosméticos">Cosméticos</a>
+    <a href="#ofertas" data-filter="Oferta">Ofertas</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <main id="inicio">
+    <section class="hero">
+      <img src="assets/hero.jpg" alt="Colección Mangue Life Style">
+      <div class="hero-overlay">
+        <p class="eyebrow">MANGUE LIFE STYLE</p>
+        <h1>Tu estilo.<br><span>Tu esencia.</span></h1>
+        <p>Perfumes, moda y belleza en un solo lugar.</p>
+        <a href="#catalogo" class="gold-btn">Comprar ahora <span>→</span></a>
+      </div>
+      <button class="hero-arrow left" id="heroPrev">‹</button>
+      <button class="hero-arrow right" id="heroNext">›</button>
+      <div class="dots"><i class="active"></i><i></i><i></i></div>
+    </section>
+
+    <section class="categories section">
+      <button data-filter="Perfumes"><span>♙</span><b>Perfumes</b></button>
+      <button data-filter="Ropa"><span>♧</span><b>Ropa</b></button>
+      <button data-filter="Pelucas"><span>◉</span><b>Pelucas</b></button>
+      <button data-filter="Zapatos"><span>⌁</span><b>Zapatos</b></button>
+      <button data-filter="Cosméticos"><span>✦</span><b>Cosméticos</b></button>
+      <button data-filter="Oferta"><span>★</span><b>Ofertas</b></button>
+    </section>
+
+    <section class="section" id="catalogo">
+      <div class="section-title">
+        <span></span><h2>Nuestras fragancias destacadas</h2><span></span>
+      </div>
+      <div class="toolbar">
+        <p id="resultText">Productos destacados</p>
+        <select id="sortSelect" aria-label="Ordenar productos">
+          <option value="featured">Destacados</option>
+          <option value="low">Precio: menor a mayor</option>
+          <option value="high">Precio: mayor a menor</option>
+        </select>
+      </div>
+      <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <section class="promo-grid section">
+      <a href="#catalogo" data-filter="Ropa" class="promo-card"><img src="assets/banner-moda.jpg" alt="Moda y estilo"><div><h3>Moda y Estilo</h3><p>Ropa, zapatos y accesorios</p><span>Ver colección →</span></div></a>
+      <a href="#catalogo" data-filter="Cosméticos" class="promo-card"><img src="assets/banner-belleza.jpg" alt="Belleza y cuidado"><div><h3>Belleza & Cuidado</h3><p>Cosméticos de calidad</p><span>Ver productos →</span></div></a>
+      <a href="#catalogo" data-filter="Pelucas" class="promo-card"><img src="assets/banner-pelucas.jpg" alt="Pelucas premium"><div><h3>Pelucas Premium</h3><p>Belleza natural y elegante</p><span>Ver pelucas →</span></div></a>
+    </section>
+
+    <section class="benefits">
+      <div>🚚 <b>Envíos rápidos</b></div>
+      <div>🛡️ <b>Compra segura</b></div>
+      <div>🎧 <b>Atención personalizada</b></div>
+      <div>♡ <b>Tu satisfacción es nuestra prioridad</b></div>
+    </section>
+
+    <section id="ofertas" class="section offers">
+      <div class="section-title"><span></span><h2>Ofertas</h2><span></span></div>
+      <p class="center">Añade productos al carrito y prepara tu pedido directamente por WhatsApp.</p>
+    </section>
+  </main>
+
+  <footer id="contacto">
+    <div class="footer-main">
+      <div class="footer-brand"><img src="assets/logo.jpg" alt="Mangue Life Style"><p>Tu estilo. Tu esencia.</p></div>
+      <div><h3>Enlaces</h3><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#ofertas">Ofertas</a><a href="#contacto">Contacto</a></div>
+      <div><h3>Contacto</h3><a href="tel:+240222725152">☎ +240 222 725 152</a><a href="tel:+240222034445">☎ +240 222 034 445</a><a href="tel:+240222648972">☎ +240 222 648 972</a><a href="https://wa.me/240222725152" target="_blank" rel="noopener">◉ WhatsApp</a></div>
+      <div><h3>Ubicación</h3><p>📍 Ela nguema detrás del colegio Español, Malabo – Guinea Ecuatorial</p></div>
+    </div>
+    <div class="copyright">© 2026 Mangue Life Style. Todos los derechos reservados.</div>
+  </footer>
+
+  <a class="whatsapp" href="https://wa.me/240222725152?text=Hola%20Mangue%20Life%20Style%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener" aria-label="WhatsApp">◉</a>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-head"><h2>Tu carrito</h2><button id="closeCart">×</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-footer">
+      <div><b>Total</b><strong id="cartTotal">0 FCFA</strong></div>
+      <button id="checkoutBtn" class="gold-btn full">Pedir por WhatsApp</button>
+    </div>
+  </aside>
+
+  <div class="modal" id="checkoutModal">
+    <div class="modal-card checkout-card">
+      <button class="modal-close" id="closeCheckout" type="button">×</button>
+      <p class="eyebrow">MANGUE LIFE STYLE</p>
+      <h2>Finalizar pedido</h2>
+      <p class="muted">Rellena tus datos y enviaremos el pedido directamente por WhatsApp para confirmar disponibilidad y pago.</p>
+      <form id="checkoutForm">
+        <label>Nombre completo
+          <input id="customerName" required autocomplete="name" placeholder="Tu nombre">
+        </label>
+        <label>Teléfono
+          <input id="customerPhone" required autocomplete="tel" placeholder="+240 ...">
+        </label>
+        <label>Dirección
+          <input id="customerAddress" required autocomplete="street-address" placeholder="Zona, ciudad o punto de entrega">
+        </label>
+        <label>Tipo de entrega
+          <select id="deliveryMethod">
+            <option>Envío / entrega a domicilio</option>
+            <option>Recogida en tienda</option>
+          </select>
+        </label>
+        <label>Observaciones
+          <textarea id="customerNotes" rows="3" placeholder="Talla, color, horario, etc."></textarea>
+        </label>
+        <button class="gold-btn full" type="submit">Enviar pedido por WhatsApp</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="accountModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeAccount">×</button>
+      <h2>Mi cuenta</h2>
+      <p>En esta primera versión, tus pedidos se gestionan de forma sencilla por WhatsApp.</p>
+      <a class="gold-btn full" href="https://wa.me/240222725152?text=Hola%20Mangue%20Life%20Style%2C%20quiero%20consultar%20mi%20pedido." target="_blank" rel="noopener">Contactar por WhatsApp</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
