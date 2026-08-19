@@ -193,8 +193,7 @@ async function loadProducts(){
   try {
     const {data,error}=await supabaseClient
       .from("products")
-      .select("*")
-      .order("created-at",{ascending:false});
+      .select("*");
 
     if(error) throw error;
 
