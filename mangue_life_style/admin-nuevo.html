@@ -151,7 +151,7 @@
 const SUPABASE_URL = "https://ebhqsmxrrbcekfyiqhmo.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_N4xC25_5dW0O4LCKHERCDA_fBFNNfnZ";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const BUCKET = "product-images";
 
@@ -177,7 +177,7 @@ function esc(v){
 }
 
 async function checkSession(){
-  const {data,error} = await supabase.auth.getSession();
+  const {data,error} = await supabaseClient.auth.getSession();
   if(error){ msg(error.message,"err"); return false; }
   if(!data.session){
     $("editor").classList.add("hidden");
@@ -190,36 +190,47 @@ async function checkSession(){
 
 async function loadProducts(){
   $("products").textContent = "Cargando...";
-  const {data,error} = await supabase
-    .from("products")
-    .select("*")
-    .order("created-at",{ascending:false});
+  try {
+    const {data,error}=await supabaseClient
+      .from("products")
+      .select("*")
+      .order("created-at",{ascending:false});
 
-  if(error){ $("products").textContent=""; msg("Error cargando productos: "+error.message,"err"); return; }
-  if(!data?.length){ $("products").innerHTML="<p>No hay productos todavía.</p>"; return; }
+    if(error) throw error;
 
-  $("products").innerHTML = "";
-  for(const p of data){
-    const image = p["image-url"] || "";
-    const box = document.createElement("div");
-    box.className="product";
-    box.innerHTML = `
-      <div class="product-row">
-        ${image ? `<img src="${esc(image)}" alt="">` : `<div class="no-image"></div>`}
-        <div>
-          <b>${esc(p.name)}</b>
-          <div class="muted">${esc(p.category || "")}</div>
-          <div>Precio: ${Number(p.price||0).toLocaleString()} · Stock: ${Number(p.stock||0)}</div>
-          <div class="muted">${p.active ? "Activo" : "Inactivo"}</div>
-        </div>
-        <div class="actions">
-          <button class="primary edit-btn">Editar</button>
-          <button class="danger delete-btn">Eliminar</button>
-        </div>
-      </div>`;
-    box.querySelector(".edit-btn").onclick=()=>editProduct(p.id);
-    box.querySelector(".delete-btn").onclick=()=>deleteProduct(p.id);
-    $("products").appendChild(box);
+    if(!data?.length){
+      $("products").innerHTML="<p>No hay productos todavía.</p>";
+      return;
+    }
+
+    $("products").innerHTML = "";
+    for(const p of data){
+      const image = p["image-url"] || "";
+      const box = document.createElement("div");
+      box.className="product";
+      box.innerHTML = `
+        <div class="product-row">
+          ${image ? `<img src="${esc(image)}" alt="">` : `<div class="no-image"></div>`}
+          <div>
+            <b>${esc(p.name)}</b>
+            <div class="muted">${esc(p.category || "")}</div>
+            <div>Precio: ${Number(p.price||0).toLocaleString()} · Stock: ${Number(p.stock||0)}</div>
+            <div class="muted">${p.acttive === false ? "Inactivo" : "Activo"}</div>
+          </div>
+          <div class="actions">
+            <button class="primary edit-btn">Editar</button>
+            <button class="danger delete-btn">Eliminar</button>
+          </div>
+        </div>`;
+      box.querySelector(".edit-btn").onclick=()=>editProduct(p.id);
+      box.querySelector(".delete-btn").onclick=()=>deleteProduct(p.id);
+      $("products").appendChild(box);
+    }
+  } catch(error) {
+    $("products").innerHTML =
+      "<p><b>No se pudieron cargar los productos.</b><br>" +
+      esc(error?.message || error) + "</p>";
+    msg("Error cargando productos: " + (error?.message || error), "err");
   }
 }
 
@@ -356,52 +367,52 @@ async function uploadImage(file, productId){
   if(!file) return currentImageUrl || null;
   const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
   const path=`products/${productId}-${Date.now()}.${ext}`;
-  const {error}=await supabase.storage.from(BUCKET).upload(path,file,{upsert:true,contentType:file.type||"image/jpeg"});
+  const {error}=await supabaseClient.storage.from(BUCKET).upload(path,file,{upsert:true,contentType:file.type||"image/jpeg"});
   if(error) throw error;
-  const {data}=supabase.storage.from(BUCKET).getPublicUrl(path);
+  const {data}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 
 async function createProduct(payload){
-  const {data,error}=await supabase.from("products").insert(payload).select("id").single();
+  const {data,error}=await supabaseClient.from("products").insert(payload).select("id").single();
   if(error) throw error;
   return data.id;
 }
 
 async function updateProduct(id,payload){
-  const {error}=await supabase.from("products").update(payload).eq("id",id);
+  const {error}=await supabaseClient.from("products").update(payload).eq("id",id);
   if(error) throw error;
 }
 
 async function clearVariantsForProduct(productId){
-  const {data:opts,error:e1}=await supabase.from("product_options").select("id").eq("product_id",productId);
+  const {data:opts,error:e1}=await supabaseClient.from("product_options").select("id").eq("product_id",productId);
   if(e1) throw e1;
   const optionIds=(opts||[]).map(x=>x.id);
 
   if(optionIds.length){
-    const {data:vals,error:e2}=await supabase.from("product_option_values").select("id").in("option_id",optionIds);
+    const {data:vals,error:e2}=await supabaseClient.from("product_option_values").select("id").in("option_id",optionIds);
     if(e2) throw e2;
     const valueIds=(vals||[]).map(x=>x.id);
     if(valueIds.length){
-      const {error:e3}=await supabase.from("product_variant_option_values").delete().in("option_value_id",valueIds);
+      const {error:e3}=await supabaseClient.from("product_variant_option_values").delete().in("option_value_id",valueIds);
       if(e3) throw e3;
     }
-    const {error:e4}=await supabase.from("product_option_values").delete().in("option_id",optionIds);
+    const {error:e4}=await supabaseClient.from("product_option_values").delete().in("option_id",optionIds);
     if(e4) throw e4;
   }
 
-  const {data:vars,error:e5}=await supabase.from("product_variants").select("id").eq("product_id",productId);
+  const {data:vars,error:e5}=await supabaseClient.from("product_variants").select("id").eq("product_id",productId);
   if(e5) throw e5;
   const variantIds=(vars||[]).map(x=>x.id);
   if(variantIds.length){
-    const {error:e6}=await supabase.from("product_variant_option_values").delete().in("variant_id",variantIds);
+    const {error:e6}=await supabaseClient.from("product_variant_option_values").delete().in("variant_id",variantIds);
     if(e6) throw e6;
   }
 
-  const {error:e7}=await supabase.from("product_variants").delete().eq("product_id",productId);
+  const {error:e7}=await supabaseClient.from("product_variants").delete().eq("product_id",productId);
   if(e7) throw e7;
 
-  const {error:e8}=await supabase.from("product_options").delete().eq("product_id",productId);
+  const {error:e8}=await supabaseClient.from("product_options").delete().eq("product_id",productId);
   if(e8) throw e8;
 }
 
@@ -411,14 +422,14 @@ async function saveVariants(productId){
 
   const saved=[];
   for(let i=0;i<opts.length;i++){
-    const {data:op,error}=await supabase.from("product_options").insert({
+    const {data:op,error}=await supabaseClient.from("product_options").insert({
       product_id:productId,name:opts[i].name,sort_order:i
     }).select("id,name").single();
     if(error) throw error;
 
     const vals=[];
     for(let j=0;j<opts[i].values.length;j++){
-      const {data:v,error:ve}=await supabase.from("product_option_values").insert({
+      const {data:v,error:ve}=await supabaseClient.from("product_option_values").insert({
         option_id:op.id,value:opts[i].values[j],sort_order:j
       }).select("id,value").single();
       if(ve) throw ve;
@@ -428,7 +439,7 @@ async function saveVariants(productId){
   }
 
   for(const variant of variants){
-    const {data:v,error}=await supabase.from("product_variants").insert({
+    const {data:v,error}=await supabaseClient.from("product_variants").insert({
       product_id:productId,
       sku:variant.sku || null,
       price:Number(variant.price)||0,
@@ -442,7 +453,7 @@ async function saveVariants(productId){
       const selected=variant.attributes[s.option.name];
       const ov=s.values.find(x=>x.value===selected);
       if(!ov) throw new Error("No se encontró el valor de variante: "+s.option.name+" / "+selected);
-      const {error:re}=await supabase.from("product_variant_option_values").insert({
+      const {error:re}=await supabaseClient.from("product_variant_option_values").insert({
         variant_id:v.id,option_value_id:ov.id
       });
       if(re) throw re;
@@ -451,31 +462,25 @@ async function saveVariants(productId){
 }
 
 async function loadProductVariants(productId){
-  const {data:opts,error}=await supabase.from("product_options").select("id,name,sort_order").eq("product_id",productId).order("sort_order");
+  const {data:opts,error}=await supabaseClient.from("product_options").select("id,name,sort_order").eq("product_id",productId).order("sort_order");
   if(error) throw error;
   const result=[];
   for(const op of opts||[]){
-    const {data:vals,error:ve}=await supabase.from("product_option_values").select("id,value,sort_order").eq("option_id",op.id).order("sort_order");
+    const {data:vals,error:ve}=await supabaseClient.from("product_option_values").select("id,value,sort_order").eq("option_id",op.id).order("sort_order");
     if(ve) throw ve;
     result.push({name:op.name,values:(vals||[]).map(x=>x.value)});
   }
-  const {data:vars,error:ver}=await supabase.from("product_variants").select("id,sku,price,stock").eq("product_id",productId);
+  const {data:vars,error:ver}=await supabaseClient.from("product_variants").select("id,sku,price,stock").eq("product_id",productId);
   if(ver) throw ver;
   for(const v of vars||[]){
-    const {data:links,error:le}=await supabase.from("product_variant_option_values").select("option_value_id").eq("variant_id",v.id);
+    const {data:links,error:le}=await supabaseClient.from("product_variant_option_values").select("option_value_id").eq("variant_id",v.id);
     if(le) throw le;
     const attrs={};
+    // Build attributes using the exact option that owns each value.
     for(const link of links||[]){
-      const {data:val,error:ve}=await supabase.from("product_option_values").select("id,value,option_id").eq("id",link.option_value_id).single();
+      const {data:val,error:ve}=await supabaseClient.from("product_option_values").select("id,value,option_id").eq("id",link.option_value_id).single();
       if(ve) throw ve;
-      const op=result.find(o=>o.values.includes(val.value));
-      if(op) attrs[op.name]=val.value;
-    }
-    // Rebuild using option ids to avoid ambiguity when two options share a value.
-    for(const link of links||[]){
-      const {data:val,error:ve}=await supabase.from("product_option_values").select("id,value,option_id").eq("id",link.option_value_id).single();
-      if(ve) throw ve;
-      const {data:op,error:oe}=await supabase.from("product_options").select("name").eq("id",val.option_id).single();
+      const {data:op,error:oe}=await supabaseClient.from("product_options").select("name").eq("id",val.option_id).single();
       if(oe) throw oe;
       attrs[op.name]=val.value;
     }
@@ -487,7 +492,7 @@ async function loadProductVariants(productId){
 async function editProduct(id){
   try{
     resetEditor();
-    const {data:p,error}=await supabase.from("products").select("*").eq("id",id).single();
+    const {data:p,error}=await supabaseClient.from("products").select("*").eq("id",id).single();
     if(error) throw error;
     editingId=id;
     $("editorTitle").textContent="Editar producto";
@@ -513,7 +518,7 @@ async function deleteProduct(id){
   if(!confirm("¿Eliminar este producto y todas sus variantes?")) return;
   try{
     await clearVariantsForProduct(id);
-    const {error}=await supabase.from("products").delete().eq("id",id);
+    const {error}=await supabaseClient.from("products").delete().eq("id",id);
     if(error) throw error;
     msg("Producto eliminado.");
     await loadProducts();
@@ -533,7 +538,7 @@ $("imageFile").onchange=()=>{
 };
 
 $("logoutBtn").onclick=async()=>{
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   location.reload();
 };
 
@@ -550,7 +555,7 @@ $("productForm").onsubmit=async e=>{
       stock:Number($("stock").value)||0,
       desciption:$("description").value,
       offer:Number($("offer").value)||0,
-      active:$("active").value==="true",
+      acttive:$("active").value==="true",
       "update-at":new Date().toISOString()
     };
     if(!base.name) throw new Error("El nombre es obligatorio.");
@@ -558,7 +563,7 @@ $("productForm").onsubmit=async e=>{
     let id=editingId;
     if(!id){
       base["created-at"]=new Date().toISOString();
-      const {data,error}=await supabase.from("products").insert(base).select("id").single();
+      const {data,error}=await supabaseClient.from("products").insert(base).select("id").single();
       if(error) throw error;
       id=data.id;
     }else{
@@ -569,10 +574,10 @@ $("productForm").onsubmit=async e=>{
     const file=$("imageFile").files[0];
     if(file){
       const url=await uploadImage(file,id);
-      const {error}=await supabase.from("products").update({"image-url":url,"update-at":new Date().toISOString()}).eq("id",id);
+      const {error}=await supabaseClient.from("products").update({"image-url":url,"update-at":new Date().toISOString()}).eq("id",id);
       if(error) throw error;
     }else if(!editingId && currentImageUrl){
-      const {error}=await supabase.from("products").update({"image-url":currentImageUrl}).eq("id",id);
+      const {error}=await supabaseClient.from("products").update({"image-url":currentImageUrl}).eq("id",id);
       if(error) throw error;
     }
 
