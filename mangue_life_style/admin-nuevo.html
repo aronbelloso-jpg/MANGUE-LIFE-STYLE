@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mangue Life Style — Administración</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+    header{background:#111;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    header h1{margin:0;font-size:22px}
+    main{max-width:1200px;margin:24px auto;padding:0 14px}
+    .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+    .full{grid-column:1/-1}
+    label{display:block;font-weight:700;margin:0 0 6px}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font:inherit}
+    textarea{min-height:100px;resize:vertical}
+    button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
+    .primary{background:#111;color:#fff}.secondary{background:#ddd;color:#111}
+    .success{background:#2e7d32;color:#fff}.danger{background:#c62828;color:#fff}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .hidden{display:none!important}
+    .notice{padding:11px 13px;border-radius:8px;margin-bottom:14px;display:none}
+    .notice.ok{display:block;background:#e8f5e9;color:#1b5e20}
+    .notice.err{display:block;background:#ffebee;color:#b71c1c}
+    .option{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px}
+    .option-title{display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .value-row{display:flex;gap:8px;margin-top:8px}
+    .value-row input{flex:1}
+    #preview{display:none;max-width:180px;max-height:180px;margin-top:10px;border-radius:8px;object-fit:cover}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:middle}
+    th{background:#f0f0f0}
+    td input{min-width:100px}
+    .product{border:1px solid #ddd;border-radius:10px;padding:12px;margin:10px 0;background:#fff}
+    .product-row{display:grid;grid-template-columns:80px 1fr auto;gap:12px;align-items:center}
+    .product-row img,.no-image{width:80px;height:80px;object-fit:cover;border-radius:8px;background:#eee}
+    .muted{color:#666;font-size:13px}
+    .spinner{opacity:.65;pointer-events:none}
+    @media(max-width:650px){
+      .product-row{grid-template-columns:65px 1fr}
+      .product-row .actions{grid-column:1/-1}
+      .product-row img,.no-image{width:65px;height:65px}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Mangue Life Style — Administración</h1>
+  <div class="actions" style="margin:0">
+    <button id="newBtn" class="primary">+ Nuevo producto</button>
+    <button id="logoutBtn" class="secondary">Cerrar sesión</button>
+  </div>
+</header>
+
+<main>
+  <div id="notice" class="notice"></div>
+
+  <section id="editor" class="card hidden">
+    <h2 id="editorTitle">Nuevo producto</h2>
+
+    <form id="productForm">
+      <div class="grid">
+        <div>
+          <label for="name">Nombre</label>
+          <input id="name" required>
+        </div>
+        <div>
+          <label for="category">Categoría</label>
+          <select id="category">
+            <option value="">Seleccionar</option>
+            <option>Perfumes</option>
+            <option>Ropa</option>
+            <option>Pelucas</option>
+            <option>Zapatos</option>
+            <option>Cosméticos</option>
+          </select>
+        </div>
+        <div>
+          <label for="price">Precio</label>
+          <input id="price" type="number" min="0" step="1" value="0">
+        </div>
+        <div>
+          <label for="oldprice">Precio anterior</label>
+          <input id="oldprice" type="number" min="0" step="1" value="0">
+        </div>
+        <div>
+          <label for="stock">Stock base</label>
+          <input id="stock" type="number" min="0" step="1" value="0">
+        </div>
+        <div>
+          <label for="offer">Oferta</label>
+          <input id="offer" type="number" min="0" step="1" value="0">
+        </div>
+        <div>
+          <label for="active">Activo</label>
+          <select id="active">
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div class="full">
+          <label for="description">Descripción</label>
+          <textarea id="description"></textarea>
+        </div>
+        <div class="full">
+          <label for="imageFile">Fotografía</label>
+          <input id="imageFile" type="file" accept="image/*">
+          <img id="preview" alt="Vista previa">
+          <div class="muted">La imagen se subirá al bucket <b>product-images</b>.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h2>Variantes</h2>
+        <p class="muted">Añade opciones como Talla, Color y Modelo. Después pulsa «Generar combinaciones».</p>
+        <div id="options"></div>
+        <div class="actions">
+          <button type="button" id="addOptionBtn" class="secondary">+ Añadir opción</button>
+          <button type="button" id="generateBtn" class="success">Generar combinaciones</button>
+        </div>
+        <div id="variants" style="margin-top:15px"></div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="saveBtn">Guardar producto</button>
+        <button type="button" class="secondary" id="cancelBtn">Cancelar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Productos</h2>
+    <div id="products">Cargando...</div>
+  </section>
+</main>
+
+<script>
+/*
+  =========================================================
+  CONFIGURACIÓN
+  =========================================================
+  Pega aquí EXACTAMENTE la URL y la ANON/PUBLISHABLE KEY
+  que ya utiliza tu admin.html antiguo.
+  NO uses una service_role key.
+*/
+const SUPABASE_URL = "https://ebhqsmxrrbcekfyiqhmo.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_N4xC25_5dW0O4LCKHERCDA_fBFNNfnZ";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const BUCKET = "product-images";
+
+let editingId = null;
+let currentImageUrl = "";
+let options = [];
+let variants = [];
+
+const $ = id => document.getElementById(id);
+const notice = $("notice");
+
+function msg(text, type="ok"){
+  notice.textContent = text;
+  notice.className = "notice " + type;
+  if(type === "ok") setTimeout(()=>notice.className="notice", 4500);
+}
+
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+async function checkSession(){
+  const {data,error} = await supabase.auth.getSession();
+  if(error){ msg(error.message,"err"); return false; }
+  if(!data.session){
+    $("editor").classList.add("hidden");
+    $("products").innerHTML = "<p>Sesión no iniciada.</p>";
+    return false;
+  }
+  await loadProducts();
+  return true;
+}
+
+async function loadProducts(){
+  $("products").textContent = "Cargando...";
+  const {data,error} = await supabase
+    .from("products")
+    .select("*")
+    .order("created-at",{ascending:false});
+
+  if(error){ $("products").textContent=""; msg("Error cargando productos: "+error.message,"err"); return; }
+  if(!data?.length){ $("products").innerHTML="<p>No hay productos todavía.</p>"; return; }
+
+  $("products").innerHTML = "";
+  for(const p of data){
+    const image = p["image-url"] || "";
+    const box = document.createElement("div");
+    box.className="product";
+    box.innerHTML = `
+      <div class="product-row">
+        ${image ? `<img src="${esc(image)}" alt="">` : `<div class="no-image"></div>`}
+        <div>
+          <b>${esc(p.name)}</b>
+          <div class="muted">${esc(p.category || "")}</div>
+          <div>Precio: ${Number(p.price||0).toLocaleString()} · Stock: ${Number(p.stock||0)}</div>
+          <div class="muted">${p.active ? "Activo" : "Inactivo"}</div>
+        </div>
+        <div class="actions">
+          <button class="primary edit-btn">Editar</button>
+          <button class="danger delete-btn">Eliminar</button>
+        </div>
+      </div>`;
+    box.querySelector(".edit-btn").onclick=()=>editProduct(p.id);
+    box.querySelector(".delete-btn").onclick=()=>deleteProduct(p.id);
+    $("products").appendChild(box);
+  }
+}
+
+function resetEditor(){
+  $("productForm").reset();
+  $("active").value="true";
+  $("price").value=0;
+  $("oldprice").value=0;
+  $("stock").value=0;
+  $("offer").value=0;
+  $("editorTitle").textContent="Nuevo producto";
+  $("preview").style.display="none";
+  $("preview").src="";
+  $("imageFile").value="";
+  editingId=null;
+  currentImageUrl="";
+  options=[];
+  variants=[];
+  renderOptions();
+  renderVariants();
+}
+
+function openNew(){
+  resetEditor();
+  $("editor").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function addOption(data=null){
+  options.push({
+    name:data?.name || "",
+    values:Array.isArray(data?.values) ? [...data.values] : [""]
+  });
+  renderOptions();
+}
+
+function renderOptions(){
+  $("options").innerHTML="";
+  options.forEach((op,oi)=>{
+    const box=document.createElement("div");
+    box.className="option";
+    box.innerHTML=`
+      <div class="option-title">
+        <b>Opción ${oi+1}</b>
+        <button type="button" class="danger remove-option">Eliminar</button>
+      </div>
+      <label style="margin-top:10px">Nombre de la opción</label>
+      <input class="option-name" placeholder="Ej.: Talla" value="${esc(op.name)}">
+      <div class="values"></div>
+      <button type="button" class="secondary add-value" style="margin-top:10px">+ Añadir valor</button>`;
+    box.querySelector(".option-name").oninput=e=>options[oi].name=e.target.value;
+    box.querySelector(".remove-option").onclick=()=>{
+      options.splice(oi,1); variants=[]; renderOptions(); renderVariants();
+    };
+    const values=box.querySelector(".values");
+    op.values.forEach((v,vi)=>{
+      const row=document.createElement("div");
+      row.className="value-row";
+      row.innerHTML=`<input placeholder="Ej.: 38" value="${esc(v)}"><button type="button" class="danger">X</button>`;
+      row.querySelector("input").oninput=e=>options[oi].values[vi]=e.target.value;
+      row.querySelector("button").onclick=()=>{
+        options[oi].values.splice(vi,1);
+        if(!options[oi].values.length) options[oi].values.push("");
+        renderOptions();
+      };
+      values.appendChild(row);
+    });
+    box.querySelector(".add-value").onclick=()=>{
+      options[oi].values.push(""); renderOptions();
+    };
+    $("options").appendChild(box);
+  });
+}
+
+function cleanOptions(){
+  return options.map(o=>({
+    name:o.name.trim(),
+    values:o.values.map(v=>v.trim()).filter(Boolean)
+  })).filter(o=>o.name && o.values.length);
+}
+
+function generateVariants(){
+  const opts=cleanOptions();
+  if(!opts.length){ msg("Añade al menos una opción con valores.","err"); return; }
+  const result=[];
+  function walk(i,current){
+    if(i===opts.length){
+      result.push({
+        attributes:{...current},
+        sku:"",
+        price:Number($("price").value)||0,
+        stock:0
+      });
+      return;
+    }
+    for(const value of opts[i].values){
+      current[opts[i].name]=value;
+      walk(i+1,current);
+    }
+  }
+  walk(0,{});
+  variants=result;
+  renderVariants();
+  msg(result.length+" combinaciones generadas.");
+}
+
+function renderVariants(){
+  const box=$("variants");
+  box.innerHTML="";
+  if(!variants.length) return;
+  const wrap=document.createElement("div");
+  wrap.className="table-wrap";
+  const table=document.createElement("table");
+  table.innerHTML="<thead><tr><th>Combinación</th><th>SKU</th><th>Precio</th><th>Stock</th></tr></thead><tbody></tbody>";
+  const tbody=table.querySelector("tbody");
+  variants.forEach((v,i)=>{
+    const tr=document.createElement("tr");
+    const attrs=Object.entries(v.attributes).map(([k,val])=>`${k}: ${val}`).join(" · ");
+    tr.innerHTML=`
+      <td><b>${esc(attrs)}</b></td>
+      <td><input value="${esc(v.sku)}" placeholder="SKU"></td>
+      <td><input type="number" min="0" step="1" value="${Number(v.price)||0}"></td>
+      <td><input type="number" min="0" step="1" value="${Number(v.stock)||0}"></td>`;
+    const ins=tr.querySelectorAll("input");
+    ins[0].oninput=e=>variants[i].sku=e.target.value;
+    ins[1].oninput=e=>variants[i].price=Number(e.target.value)||0;
+    ins[2].oninput=e=>variants[i].stock=Number(e.target.value)||0;
+    tbody.appendChild(tr);
+  });
+  wrap.appendChild(table); box.appendChild(wrap);
+}
+
+async function uploadImage(file, productId){
+  if(!file) return currentImageUrl || null;
+  const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const path=`products/${productId}-${Date.now()}.${ext}`;
+  const {error}=await supabase.storage.from(BUCKET).upload(path,file,{upsert:true,contentType:file.type||"image/jpeg"});
+  if(error) throw error;
+  const {data}=supabase.storage.from(BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function createProduct(payload){
+  const {data,error}=await supabase.from("products").insert(payload).select("id").single();
+  if(error) throw error;
+  return data.id;
+}
+
+async function updateProduct(id,payload){
+  const {error}=await supabase.from("products").update(payload).eq("id",id);
+  if(error) throw error;
+}
+
+async function clearVariantsForProduct(productId){
+  const {data:opts,error:e1}=await supabase.from("product_options").select("id").eq("product_id",productId);
+  if(e1) throw e1;
+  const optionIds=(opts||[]).map(x=>x.id);
+
+  if(optionIds.length){
+    const {data:vals,error:e2}=await supabase.from("product_option_values").select("id").in("option_id",optionIds);
+    if(e2) throw e2;
+    const valueIds=(vals||[]).map(x=>x.id);
+    if(valueIds.length){
+      const {error:e3}=await supabase.from("product_variant_option_values").delete().in("option_value_id",valueIds);
+      if(e3) throw e3;
+    }
+    const {error:e4}=await supabase.from("product_option_values").delete().in("option_id",optionIds);
+    if(e4) throw e4;
+  }
+
+  const {data:vars,error:e5}=await supabase.from("product_variants").select("id").eq("product_id",productId);
+  if(e5) throw e5;
+  const variantIds=(vars||[]).map(x=>x.id);
+  if(variantIds.length){
+    const {error:e6}=await supabase.from("product_variant_option_values").delete().in("variant_id",variantIds);
+    if(e6) throw e6;
+  }
+
+  const {error:e7}=await supabase.from("product_variants").delete().eq("product_id",productId);
+  if(e7) throw e7;
+
+  const {error:e8}=await supabase.from("product_options").delete().eq("product_id",productId);
+  if(e8) throw e8;
+}
+
+async function saveVariants(productId){
+  const opts=cleanOptions();
+  if(!opts.length || !variants.length) return;
+
+  const saved=[];
+  for(let i=0;i<opts.length;i++){
+    const {data:op,error}=await supabase.from("product_options").insert({
+      product_id:productId,name:opts[i].name,sort_order:i
+    }).select("id,name").single();
+    if(error) throw error;
+
+    const vals=[];
+    for(let j=0;j<opts[i].values.length;j++){
+      const {data:v,error:ve}=await supabase.from("product_option_values").insert({
+        option_id:op.id,value:opts[i].values[j],sort_order:j
+      }).select("id,value").single();
+      if(ve) throw ve;
+      vals.push(v);
+    }
+    saved.push({option:op,values:vals});
+  }
+
+  for(const variant of variants){
+    const {data:v,error}=await supabase.from("product_variants").insert({
+      product_id:productId,
+      sku:variant.sku || null,
+      price:Number(variant.price)||0,
+      stock:Number(variant.stock)||0,
+      image_url:null,
+      active:true
+    }).select("id").single();
+    if(error) throw error;
+
+    for(const s of saved){
+      const selected=variant.attributes[s.option.name];
+      const ov=s.values.find(x=>x.value===selected);
+      if(!ov) throw new Error("No se encontró el valor de variante: "+s.option.name+" / "+selected);
+      const {error:re}=await supabase.from("product_variant_option_values").insert({
+        variant_id:v.id,option_value_id:ov.id
+      });
+      if(re) throw re;
+    }
+  }
+}
+
+async function loadProductVariants(productId){
+  const {data:opts,error}=await supabase.from("product_options").select("id,name,sort_order").eq("product_id",productId).order("sort_order");
+  if(error) throw error;
+  const result=[];
+  for(const op of opts||[]){
+    const {data:vals,error:ve}=await supabase.from("product_option_values").select("id,value,sort_order").eq("option_id",op.id).order("sort_order");
+    if(ve) throw ve;
+    result.push({name:op.name,values:(vals||[]).map(x=>x.value)});
+  }
+  const {data:vars,error:ver}=await supabase.from("product_variants").select("id,sku,price,stock").eq("product_id",productId);
+  if(ver) throw ver;
+  for(const v of vars||[]){
+    const {data:links,error:le}=await supabase.from("product_variant_option_values").select("option_value_id").eq("variant_id",v.id);
+    if(le) throw le;
+    const attrs={};
+    for(const link of links||[]){
+      const {data:val,error:ve}=await supabase.from("product_option_values").select("id,value,option_id").eq("id",link.option_value_id).single();
+      if(ve) throw ve;
+      const op=result.find(o=>o.values.includes(val.value));
+      if(op) attrs[op.name]=val.value;
+    }
+    // Rebuild using option ids to avoid ambiguity when two options share a value.
+    for(const link of links||[]){
+      const {data:val,error:ve}=await supabase.from("product_option_values").select("id,value,option_id").eq("id",link.option_value_id).single();
+      if(ve) throw ve;
+      const {data:op,error:oe}=await supabase.from("product_options").select("name").eq("id",val.option_id).single();
+      if(oe) throw oe;
+      attrs[op.name]=val.value;
+    }
+    variants.push({attributes:attrs,sku:v.sku||"",price:Number(v.price)||0,stock:Number(v.stock)||0});
+  }
+  options=result;
+}
+
+async function editProduct(id){
+  try{
+    resetEditor();
+    const {data:p,error}=await supabase.from("products").select("*").eq("id",id).single();
+    if(error) throw error;
+    editingId=id;
+    $("editorTitle").textContent="Editar producto";
+    $("name").value=p.name||"";
+    $("category").value=p.category||"";
+    $("price").value=Number(p.price)||0;
+    $("oldprice").value=Number(p["old-price"])||0;
+    $("stock").value=Number(p.stock)||0;
+    $("offer").value=Number(p.offer)||0;
+    $("active").value=p.active ? "true":"false";
+    $("description").value=p.desciption||"";
+    currentImageUrl=p["image-url"]||"";
+    if(currentImageUrl){$("preview").src=currentImageUrl;$("preview").style.display="block";}
+    options=[]; variants=[];
+    await loadProductVariants(id);
+    renderOptions(); renderVariants();
+    $("editor").classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(e){msg("No se pudo editar: "+e.message,"err");}
+}
+
+async function deleteProduct(id){
+  if(!confirm("¿Eliminar este producto y todas sus variantes?")) return;
+  try{
+    await clearVariantsForProduct(id);
+    const {error}=await supabase.from("products").delete().eq("id",id);
+    if(error) throw error;
+    msg("Producto eliminado.");
+    await loadProducts();
+  }catch(e){msg("No se pudo eliminar: "+e.message,"err");}
+}
+
+$("newBtn").onclick=openNew;
+$("addOptionBtn").onclick=()=>addOption();
+$("generateBtn").onclick=generateVariants;
+$("cancelBtn").onclick=()=>{$("editor").classList.add("hidden");resetEditor();};
+
+$("imageFile").onchange=()=>{
+  const file=$("imageFile").files[0];
+  if(!file){$("preview").style.display="none";return;}
+  $("preview").src=URL.createObjectURL(file);
+  $("preview").style.display="block";
+};
+
+$("logoutBtn").onclick=async()=>{
+  await supabase.auth.signOut();
+  location.reload();
+};
+
+$("productForm").onsubmit=async e=>{
+  e.preventDefault();
+  const btn=$("saveBtn");
+  btn.classList.add("spinner"); btn.disabled=true;
+  try{
+    const base={
+      name:$("name").value.trim(),
+      category:$("category").value,
+      price:Number($("price").value)||0,
+      "old-price":Number($("oldprice").value)||0,
+      stock:Number($("stock").value)||0,
+      desciption:$("description").value,
+      offer:Number($("offer").value)||0,
+      active:$("active").value==="true",
+      "update-at":new Date().toISOString()
+    };
+    if(!base.name) throw new Error("El nombre es obligatorio.");
+
+    let id=editingId;
+    if(!id){
+      base["created-at"]=new Date().toISOString();
+      const {data,error}=await supabase.from("products").insert(base).select("id").single();
+      if(error) throw error;
+      id=data.id;
+    }else{
+      await updateProduct(id,base);
+      await clearVariantsForProduct(id);
+    }
+
+    const file=$("imageFile").files[0];
+    if(file){
+      const url=await uploadImage(file,id);
+      const {error}=await supabase.from("products").update({"image-url":url,"update-at":new Date().toISOString()}).eq("id",id);
+      if(error) throw error;
+    }else if(!editingId && currentImageUrl){
+      const {error}=await supabase.from("products").update({"image-url":currentImageUrl}).eq("id",id);
+      if(error) throw error;
+    }
+
+    if(cleanOptions().length && variants.length){
+      await saveVariants(id);
+    }
+
+    msg(editingId ? "Producto actualizado correctamente." : "Producto creado correctamente.");
+    $("editor").classList.add("hidden");
+    resetEditor();
+    await loadProducts();
+  }catch(e){
+    msg("No se pudo guardar: "+e.message,"err");
+  }finally{
+    btn.classList.remove("spinner"); btn.disabled=false;
+  }
+};
+
+(async()=>{
+  if(SUPABASE_URL.startsWith("PON_AQUI") || SUPABASE_ANON_KEY.startsWith("PON_AQUI")){
+    $("products").innerHTML="<p><b>Falta configurar Supabase.</b> Copia la URL y la clave pública de tu admin.html antiguo en las dos constantes del archivo.</p>";
+    return;
+  }
+  await checkSession();
+})();
+</script>
+</body>
+</html>
