@@ -1,31 +1,1076 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin | Mangue Life Style</title><link rel="stylesheet" href="styles.css"><style>
-body{background:#f5f1e8}.wrap{max-width:1100px;margin:auto;padding:25px}.box{background:#fff;padding:25px;border-radius:14px;box-shadow:0 5px 25px #0001;margin:20px 0}label{display:grid;gap:6px;margin:10px 0;font-weight:bold;font-size:13px}input,select{padding:11px;border:1px solid #ddd;border-radius:8px}button{padding:10px 16px;border:0;border-radius:20px;font-weight:bold;cursor:pointer}.gold{background:#d7a622}.danger{background:#e74c3c;color:#fff}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hide{display:none}.head{display:flex;justify-content:space-between;align-items:center}.muted{color:#777}@media(max-width:650px){.grid{grid-template-columns:1fr}}
-</style></head><body><div class="wrap">
-<div class="box head"><b>MANGUE LIFE STYLE — ADMINISTRACIÓN</b><a href="index.html">Ver tienda</a></div>
-<section id="login" class="box"><h2>Acceso administrador</h2><form id="lf"><label>Usuario<input id="u" required></label><label>Contraseña<input id="pw" type="password" required></label><button class="gold">Entrar</button></form><p id="err" class="muted"></p><small>Demo: usuario <b>admin</b> · contraseña <b>MangueAdmin2026!</b></small></section>
-<section id="app" class="box hide"><div class="head"><h2>Productos</h2><button id="logout">Salir</button></div><button id="new" class="gold">+ Nuevo producto</button><div id="formbox" class="box hide"><h3>Editar producto</h3><form id="pf" class="grid">
-<label>Nombre<input id="name" required></label><label>Precio FCFA<input id="price" type="number" required></label><label>Categoría<select id="cat"><option>Perfumes</option><option>Ropa</option><option>Pelucas</option><option>Zapatos</option><option>Cosméticos</option></select></label><label>Stock<input id="stock" type="number" min="0"></label><label>Imagen<input id="img"></label><label>Oferta<select id="offer"><option value="false">No</option><option value="true">Sí</option></select></label><label style="grid-column:1/-1">Descripción<input id="desc"></label><div><button class="gold">Guardar</button> <button type="button" id="cancel">Cancelar</button></div></form></div>
-<table><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody id="rows"></tbody></table></section></div>
-<script>
-const defaults=[
-{id:1,name:"DIVA 022",cat:"Perfumes",price:18000,stock:0,img:"assets/product-1.jpg",offer:false,desc:"Perfume de equivalencia · Unisex"},
-{id:2,name:"DIVA LIBRE",cat:"Perfumes",price:20000,stock:0,img:"assets/product-2.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
-{id:3,name:"DIVA 767",cat:"Perfumes",price:18000,stock:0,img:"assets/product-3.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
-{id:4,name:"DIVA 883",cat:"Perfumes",price:20000,stock:0,img:"assets/product-4.jpg",offer:false,desc:"Perfume de equivalencia · Unisex"},
-{id:5,name:"DIVA 740",cat:"Perfumes",price:18000,stock:0,img:"assets/product-5.jpg",offer:false,desc:"Perfume de equivalencia · Femenino"},
-{id:6,name:"Elegance",cat:"Ropa",price:45000,stock:0,img:"assets/banner-moda.jpg",offer:false,desc:"Moda y estilo"},
-{id:7,name:"Glow Beauty",cat:"Cosméticos",price:28000,stock:0,img:"assets/banner-belleza.jpg",offer:false,desc:"Cosméticos"},
-{id:8,name:"Premium Wave",cat:"Pelucas",price:75000,stock:0,img:"assets/banner-pelucas.jpg",offer:false,desc:"Peluca premium"},
-{id:9,name:"Classic Heel",cat:"Zapatos",price:50000,stock:0,img:"assets/banner-moda.jpg",offer:false,desc:"Calzado"}];
-let ps=JSON.parse(localStorage.mangue_products||"null")||defaults,edit=null;
-const $=x=>document.querySelector(x), money=n=>new Intl.NumberFormat("es-GQ").format(n)+" FCFA";
-function render(){$("#rows").innerHTML=ps.map(p=>`<tr><td>${p.name}<br><small>${p.cat}</small></td><td>${money(p.price)}</td><td>${p.stock||0}</td><td><button class="gold" onclick="editP(${p.id})">Editar</button> <button class="danger" onclick="delP(${p.id})">Eliminar</button></td></tr>`).join("");localStorage.mangue_products=JSON.stringify(ps)}
-function editP(id){let p=ps.find(x=>x.id==id);edit=id;["name","price","cat","stock","img","offer","desc"].forEach(k=>$("#"+k).value=p[k]??"");$("#formbox").classList.remove("hide")}
-function delP(id){if(confirm("¿Eliminar producto?")){ps=ps.filter(x=>x.id!=id);render()}}
-$("#lf").onsubmit=e=>{e.preventDefault();if($("#u").value==="admin"&&$("#pw").value==="MangueAdmin2026!"){sessionStorage.a=1;$("#login").classList.add("hide");$("#app").classList.remove("hide");render()}else $("#err").textContent="Datos incorrectos."};
-$("#logout").onclick=()=>{sessionStorage.removeItem("a");location.reload()};
-$("#new").onclick=()=>{edit=null;$("#pf").reset();$("#formbox").classList.remove("hide")};
-$("#cancel").onclick=()=>$("#formbox").classList.add("hide");
-$("#pf").onsubmit=e=>{e.preventDefault();let d={name:$("#name").value,price:+$("#price").value,cat:$("#cat").value,stock:+$("#stock").value||0,img:$("#img").value||"assets/product-1.jpg",offer:$("#offer").value==="true",desc:$("#desc").value};if(edit){Object.assign(ps.find(x=>x.id==edit),d)}else{d.id=Date.now();ps.push(d)}render();$("#formbox").classList.add("hide")};
-if(sessionStorage.a){$("#login").classList.add("hide");$("#app").classList.remove("hide");render()}
-</script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin | Mangue Life Style</title>
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#f5f1e8;
+      font-family:Arial,sans-serif;
+      color:#222;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:auto;
+      padding:20px;
+    }
+    .box{
+      background:#fff;
+      padding:24px;
+      border-radius:16px;
+      box-shadow:0 5px 25px #0001;
+      margin:20px 0;
+    }
+    .head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+    label{
+      display:grid;
+      gap:7px;
+      font-weight:bold;
+      font-size:14px;
+    }
+    input,select,textarea{
+      width:100%;
+      padding:12px;
+      border:1px solid #ddd;
+      border-radius:9px;
+      font:inherit;
+    }
+    textarea{
+      min-height:90px;
+      resize:vertical;
+    }
+    button{
+      border:0;
+      border-radius:22px;
+      padding:11px 18px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .gold{
+      background:#d7a622;
+      color:#111;
+    }
+    .danger{
+      background:#e74c3c;
+      color:white;
+    }
+    .secondary{
+      background:#eee;
+    }
+    .hide{
+      display:none!important;
+    }
+    .muted{
+      color:#777;
+    }
+    .error{
+      color:#c0392b;
+      font-weight:bold;
+    }
+    .success{
+      color:#16803c;
+      font-weight:bold;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+    th,td{
+      padding:11px 8px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+      font-size:14px;
+    }
+    .product-img{
+      width:55px;
+      height:55px;
+      object-fit:cover;
+      border-radius:8px;
+      background:#eee;
+    }
+    .actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .preview{
+      max-width:180px;
+      max-height:180px;
+      object-fit:cover;
+      border-radius:12px;
+      margin-top:10px;
+      display:none;
+    }
+    @media(max-width:700px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+      .wrap{
+        padding:10px;
+      }
+      .box{
+        padding:18px;
+      }
+      table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+      }
+      .head{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="box head">
+    <div>
+      <strong>MANGUE LIFE STYLE</strong>
+      <div class="muted">Panel de administración</div>
+    </div>
+
+    <div>
+      <button class="secondary" onclick="window.location.href='index.html'">
+        Ver tienda
+      </button>
+      <button class="danger" id="logoutBtn">
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <section id="loginBox" class="box">
+    <h2>Acceso administrador</h2>
+
+    <form id="loginForm">
+
+      <label>
+        Correo electrónico
+        <input id="email" type="email" required autocomplete="email">
+      </label>
+
+      <br>
+
+      <label>
+        Contraseña
+        <input id="password" type="password" required autocomplete="current-password">
+      </label>
+
+      <br>
+
+      <button class="gold" type="submit">
+        Entrar
+      </button>
+
+    </form>
+
+    <p id="loginMessage" class="muted"></p>
+  </section>
+
+
+  <!-- APP -->
+  <section id="appBox" class="box hide">
+
+    <div class="head">
+      <div>
+        <h2>Productos</h2>
+        <p class="muted">
+          Administra precios, stock, fotografías y productos.
+        </p>
+      </div>
+
+      <button id="newProductBtn" class="gold">
+        + Nuevo producto
+      </button>
+    </div>
+
+
+    <!-- FORMULARIO -->
+    <div id="formBox" class="box hide">
+
+      <h3 id="formTitle">
+        Nuevo producto
+      </h3>
+
+      <form id="productForm">
+
+        <div class="grid">
+
+          <label>
+            Nombre
+            <input id="name" required>
+          </label>
+
+          <label>
+            Precio FCFA
+            <input id="price" type="number" min="0" required>
+          </label>
+
+          <label>
+            Categoría
+            <select id="category">
+              <option>Perfumes</option>
+              <option>Ropa</option>
+              <option>Pelucas</option>
+              <option>Zapatos</option>
+              <option>Cosméticos</option>
+            </select>
+          </label>
+
+          <label>
+            Stock
+            <input id="stock" type="number" min="0" value="0">
+          </label>
+
+          <label>
+            Oferta
+            <select id="offer">
+              <option value="false">No</option>
+              <option value="true">Sí</option>
+            </select>
+          </label>
+
+          <label>
+            Fotografía
+            <input id="imageFile" type="file" accept="image/*">
+          </label>
+
+        </div>
+
+        <br>
+
+        <label>
+          Descripción
+          <textarea id="description"></textarea>
+        </label>
+
+        <img id="preview" class="preview">
+
+        <br>
+
+        <button class="gold" type="submit">
+          Guardar producto
+        </button>
+
+        <button class="secondary" type="button" id="cancelBtn">
+          Cancelar
+        </button>
+
+        <p id="formMessage"></p>
+
+      </form>
+
+    </div>
+
+
+    <!-- PRODUCTOS -->
+    <div style="overflow-x:auto">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody id="productsBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<script type="module">
+
+/*
+  CONFIGURACIÓN SUPABASE
+*/
+
+const SUPABASE_URL =
+  "https://ebhqsmxrrbcekfyiqhmo.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_N4xC25_5dW0O4LCKHERCDA_fBFNNfnZ";
+
+
+/*
+  CLIENTE SUPABASE
+*/
+
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+const supabase =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/*
+  ELEMENTOS
+*/
+
+const loginBox =
+  document.getElementById("loginBox");
+
+const appBox =
+  document.getElementById("appBox");
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const loginMessage =
+  document.getElementById("loginMessage");
+
+const productForm =
+  document.getElementById("productForm");
+
+const formBox =
+  document.getElementById("formBox");
+
+const formTitle =
+  document.getElementById("formTitle");
+
+const formMessage =
+  document.getElementById("formMessage");
+
+const productsBody =
+  document.getElementById("productsBody");
+
+const preview =
+  document.getElementById("preview");
+
+const imageFile =
+  document.getElementById("imageFile");
+
+
+let editingId = null;
+let editingImage = null;
+
+
+/*
+  FORMATO PRECIO
+*/
+
+function money(value){
+
+  return new Intl.NumberFormat("es-GQ")
+    .format(Number(value || 0))
+    + " FCFA";
+
+}
+
+
+/*
+  MENSAJES
+*/
+
+function showLoginMessage(text,error=false){
+
+  loginMessage.textContent = text;
+
+  loginMessage.className =
+    error ? "error" : "success";
+
+}
+
+
+function showFormMessage(text,error=false){
+
+  formMessage.textContent = text;
+
+  formMessage.className =
+    error ? "error" : "success";
+
+}
+
+
+/*
+  LOGIN
+*/
+
+loginForm.addEventListener(
+  "submit",
+  async(event)=>{
+
+    event.preventDefault();
+
+    showLoginMessage("Comprobando acceso...");
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+
+    const {
+      error
+    } =
+    await supabase.auth.signInWithPassword({
+
+      email,
+      password
+
+    });
+
+
+    if(error){
+
+      console.error(error);
+
+      showLoginMessage(
+        "No se pudo iniciar sesión: "
+        + error.message,
+        true
+      );
+
+      return;
+
+    }
+
+
+    showLoginMessage(
+      "Acceso correcto."
+    );
+
+    await checkSession();
+
+  }
+);
+
+
+/*
+  COMPROBAR SESIÓN
+*/
+
+async function checkSession(){
+
+  const {
+    data
+  } =
+  await supabase.auth.getSession();
+
+
+  if(data.session){
+
+    loginBox.classList.add("hide");
+
+    appBox.classList.remove("hide");
+
+    await loadProducts();
+
+  }else{
+
+    loginBox.classList.remove("hide");
+
+    appBox.classList.add("hide");
+
+  }
+
+}
+
+
+/*
+  CARGAR PRODUCTOS
+*/
+
+async function loadProducts(){
+
+  productsBody.innerHTML =
+    "<tr><td colspan='5'>Cargando productos...</td></tr>";
+
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+    .from("products")
+    .select("*")
+    .order("id",{ascending:true});
+
+
+  if(error){
+
+    console.error(error);
+
+    productsBody.innerHTML =
+      "<tr><td colspan='5'>Error cargando productos.</td></tr>";
+
+    return;
+
+  }
+
+
+  if(!data.length){
+
+    productsBody.innerHTML =
+      "<tr><td colspan='5'>No hay productos todavía.</td></tr>";
+
+    return;
+
+  }
+
+
+  productsBody.innerHTML =
+    data.map(product=>{
+
+      const image =
+        product.image_url
+        ?
+        `<img class="product-img" src="${product.image_url}">`
+        :
+        `<div class="product-img"></div>`;
+
+
+      return `
+
+        <tr>
+
+          <td>${image}</td>
+
+          <td>
+            <strong>${escapeHtml(product.name)}</strong>
+            <br>
+            <small>${escapeHtml(product.category)}</small>
+          </td>
+
+          <td>
+            ${money(product.price)}
+          </td>
+
+          <td>
+            ${product.stock ?? 0}
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="gold"
+                data-edit="${product.id}">
+                Editar
+              </button>
+
+              <button
+                class="danger"
+                data-delete="${product.id}">
+                Eliminar
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join("");
+
+
+  document
+    .querySelectorAll("[data-edit]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+          editProduct(
+            Number(button.dataset.edit)
+          );
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-delete]")
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+          deleteProduct(
+            Number(button.dataset.delete)
+          );
+        }
+      );
+
+    });
+
+}
+
+
+/*
+  ESCAPAR HTML
+*/
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/*
+  NUEVO PRODUCTO
+*/
+
+document
+  .getElementById("newProductBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      editingId = null;
+      editingImage = null;
+
+      formTitle.textContent =
+        "Nuevo producto";
+
+      productForm.reset();
+
+      preview.style.display =
+        "none";
+
+      formBox.classList.remove("hide");
+
+      showFormMessage("");
+
+    }
+  );
+
+
+/*
+  EDITAR PRODUCTO
+*/
+
+async function editProduct(id){
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+    .from("products")
+    .select("*")
+    .eq("id",id)
+    .single();
+
+
+  if(error){
+
+    alert(
+      "No se pudo cargar el producto."
+    );
+
+    return;
+
+  }
+
+
+  editingId = id;
+
+  editingImage =
+    data.image_url || null;
+
+
+  formTitle.textContent =
+    "Editar producto";
+
+
+  document.getElementById("name").value =
+    data.name || "";
+
+  document.getElementById("price").value =
+    data.price || 0;
+
+  document.getElementById("category").value =
+    data.category || "Perfumes";
+
+  document.getElementById("stock").value =
+    data.stock || 0;
+
+  document.getElementById("offer").value =
+    String(Boolean(data.offer));
+
+  document.getElementById("description").value =
+    data.description || "";
+
+
+  if(data.image_url){
+
+    preview.src =
+      data.image_url;
+
+    preview.style.display =
+      "block";
+
+  }else{
+
+    preview.style.display =
+      "none";
+
+  }
+
+
+  formBox.classList.remove("hide");
+
+}
+
+
+/*
+  SUBIR FOTO
+*/
+
+async function uploadImage(file){
+
+  if(!file){
+
+    return editingImage;
+
+  }
+
+
+  const extension =
+    file.name.split(".").pop()
+      .toLowerCase();
+
+
+  const fileName =
+    `${crypto.randomUUID()}.${extension}`;
+
+
+  const filePath =
+    `products/${fileName}`;
+
+
+  const {
+    error
+  } =
+  await supabase.storage
+    .from("product-images")
+    .upload(
+      filePath,
+      file,
+      {
+        upsert:false
+      }
+    );
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+
+  const {
+    data
+  } =
+  supabase.storage
+    .from("product-images")
+    .getPublicUrl(filePath);
+
+
+  return data.publicUrl;
+
+}
+
+
+/*
+  GUARDAR PRODUCTO
+*/
+
+productForm.addEventListener(
+  "submit",
+  async(event)=>{
+
+    event.preventDefault();
+
+    showFormMessage(
+      "Guardando..."
+    );
+
+
+    try{
+
+      const file =
+        imageFile.files[0];
+
+
+      const imageUrl =
+        await uploadImage(file);
+
+
+      const product = {
+
+        name:
+          document.getElementById("name").value.trim(),
+
+        price:
+          Number(
+            document.getElementById("price").value
+          ),
+
+        category:
+          document.getElementById("category").value,
+
+        stock:
+          Number(
+            document.getElementById("stock").value || 0
+          ),
+
+        offer:
+          document.getElementById("offer").value
+          === "true",
+
+        description:
+          document.getElementById("description").value.trim(),
+
+        image_url:
+          imageUrl || null
+
+      };
+
+
+      let result;
+
+
+      if(editingId){
+
+        result =
+          await supabase
+            .from("products")
+            .update(product)
+            .eq("id",editingId);
+
+      }else{
+
+        result =
+          await supabase
+            .from("products")
+            .insert(product);
+
+      }
+
+
+      if(result.error){
+
+        throw result.error;
+
+      }
+
+
+      showFormMessage(
+        "Producto guardado correctamente."
+      );
+
+
+      editingId = null;
+
+      editingImage = null;
+
+
+      productForm.reset();
+
+      preview.style.display =
+        "none";
+
+
+      await loadProducts();
+
+
+      setTimeout(
+        ()=>{
+          formBox.classList.add("hide");
+        },
+        700
+      );
+
+
+    }catch(error){
+
+      console.error(error);
+
+      showFormMessage(
+        "Error: " + error.message,
+        true
+      );
+
+    }
+
+  }
+);
+
+
+/*
+  ELIMINAR
+*/
+
+async function deleteProduct(id){
+
+  if(
+    !confirm(
+      "¿Seguro que quieres eliminar este producto?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+  await supabase
+    .from("products")
+    .delete()
+    .eq("id",id);
+
+
+  if(error){
+
+    alert(
+      "No se pudo eliminar: "
+      + error.message
+    );
+
+    return;
+
+  }
+
+
+  await loadProducts();
+
+}
+
+
+/*
+  CANCELAR
+*/
+
+document
+  .getElementById("cancelBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      formBox.classList.add("hide");
+
+      productForm.reset();
+
+      preview.style.display =
+        "none";
+
+      editingId = null;
+
+      editingImage = null;
+
+    }
+  );
+
+
+/*
+  PREVISUALIZACIÓN
+*/
+
+imageFile.addEventListener(
+  "change",
+  ()=>{
+
+    const file =
+      imageFile.files[0];
+
+    if(!file){
+
+      preview.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    preview.src =
+      URL.createObjectURL(file);
+
+    preview.style.display =
+      "block";
+
+  }
+);
+
+
+/*
+  CERRAR SESIÓN
+*/
+
+document
+  .getElementById("logoutBtn")
+  .addEventListener(
+    "click",
+    async()=>{
+
+      await supabase.auth.signOut();
+
+      location.reload();
+
+    }
+  );
+
+
+/*
+  ARRANQUE
+*/
+
+await checkSession();
+
+</script>
+
+</body>
+</html>
