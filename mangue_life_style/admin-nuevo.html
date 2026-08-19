@@ -73,11 +73,11 @@
           <label for="category">Categoría</label>
           <select id="category">
             <option value="">Seleccionar</option>
-            <option>Perfumes</option>
-            <option>Ropa</option>
-            <option>Pelucas</option>
-            <option>Zapatos</option>
-            <option>Cosméticos</option>
+            <option value="Perfumes">Perfumes</option>
+            <option value="Ropa">Ropa</option>
+            <option value="Pelucas">Pelucas</option>
+            <option value="Zapatos">Zapatos</option>
+            <option value="Cosméticos">Cosméticos</option>
           </select>
         </div>
         <div>
@@ -311,12 +311,53 @@ function cleanOptions(){
   })).filter(o=>o.name && o.values.length);
 }
 
+const CATEGORY_PRESETS = {
+  "Perfumes": [
+    {name:"Tamaño", values:["30 ml","50 ml","100 ml"]},
+    {name:"Tipo", values:["Agua de perfume","Intense"]}
+  ],
+  "Ropa": [
+    {name:"Talla", values:["S","M","L","XL"]},
+    {name:"Color", values:["Negro","Blanco","Rojo"]}
+  ],
+  "Pelucas": [
+    {name:"Largo", values:["Corto","Medio","Largo"]},
+    {name:"Color", values:["Negro","Marrón","Rubio"]}
+  ],
+  "Zapatos": [
+    {name:"Talla", values:["38","39","40"]},
+    {name:"Color", values:["Negro","Blanco"]},
+    {name:"Modelo", values:["Deportivo"]}
+  ],
+  "Cosméticos": [
+    {name:"Tono", values:["Claro","Medio","Oscuro"]},
+    {name:"Tamaño", values:["30 ml","50 ml"]}
+  ]
+};
+
+function loadCategoryOptions(){
+  const category=$("category").value;
+  const presets=CATEGORY_PRESETS[category];
+  if(!presets) return;
+  options=presets.map(x=>({name:x.name,values:[...x.values]}));
+  variants=[];
+  renderOptions();
+  renderVariants();
+}
+
+
 function generateVariants(){
   const opts=cleanOptions();
-  if(!opts.length){ msg("Añade al menos una opción con valores.","err"); return; }
+
+  if(!opts.length){
+    msg("Selecciona una categoría o añade al menos una opción con valores.","err");
+    $("variants").innerHTML="";
+    return;
+  }
+
   const result=[];
-  function walk(i,current){
-    if(i===opts.length){
+  function walk(index,current){
+    if(index===opts.length){
       result.push({
         attributes:{...current},
         sku:"",
@@ -325,15 +366,19 @@ function generateVariants(){
       });
       return;
     }
-    for(const value of opts[i].values){
-      current[opts[i].name]=value;
-      walk(i+1,current);
+
+    const option=opts[index];
+    for(const value of option.values){
+      current[option.name]=value;
+      walk(index+1,current);
     }
   }
+
   walk(0,{});
   variants=result;
   renderVariants();
-  msg(result.length+" combinaciones generadas.");
+
+  msg("Se han generado "+result.length+" combinaciones.");
 }
 
 function renderVariants(){
@@ -525,6 +570,7 @@ async function deleteProduct(id){
 }
 
 $("newBtn").onclick=openNew;
+$("category").addEventListener("change", loadCategoryOptions);
 $("addOptionBtn").onclick=()=>addOption();
 $("generateBtn").onclick=generateVariants;
 $("cancelBtn").onclick=()=>{$("editor").classList.add("hidden");resetEditor();};
@@ -593,15 +639,3 @@ $("productForm").onsubmit=async e=>{
   }finally{
     btn.classList.remove("spinner"); btn.disabled=false;
   }
-};
-
-(async()=>{
-  if(SUPABASE_URL.startsWith("PON_AQUI") || SUPABASE_ANON_KEY.startsWith("PON_AQUI")){
-    $("products").innerHTML="<p><b>Falta configurar Supabase.</b> Copia la URL y la clave pública de tu admin.html antiguo en las dos constantes del archivo.</p>";
-    return;
-  }
-  await checkSession();
-})();
-</script>
-</body>
-</html>
