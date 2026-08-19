@@ -172,6 +172,9 @@ function renderProducts(){
             src="${p.img}"
             alt="${escapeHtml(p.name)}"
             loading="lazy"
+            class="product-image"
+            data-product-image="${p.id}"
+            title="Tocar para ampliar"
           >
 
         </div>
@@ -231,6 +234,203 @@ function renderProducts(){
         No encontramos productos con esa búsqueda.
       </div>
     `;
+
+}
+
+
+/* =========================
+   VISOR DE IMÁGENES
+========================= */
+
+function createImageViewer(){
+
+  if(document.getElementById("mangueImageViewer")){
+    return;
+  }
+
+  const viewer = document.createElement("div");
+
+  viewer.id = "mangueImageViewer";
+
+  viewer.innerHTML = `
+    <div
+      class="mangue-image-overlay"
+      aria-label="Cerrar imagen"
+    >
+
+      <button
+        type="button"
+        class="mangue-image-close"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+
+      <img
+        class="mangue-image-large"
+        src=""
+        alt=""
+      >
+
+    </div>
+  `;
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+
+    #mangueImageViewer{
+      position:fixed;
+      inset:0;
+      z-index:99999;
+      display:none;
+    }
+
+    #mangueImageViewer.open{
+      display:block;
+    }
+
+    .mangue-image-overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.88);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:25px;
+      cursor:zoom-out;
+      box-sizing:border-box;
+    }
+
+    .mangue-image-large{
+      display:block;
+      max-width:95vw;
+      max-height:90vh;
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      border-radius:10px;
+      box-shadow:0 10px 40px rgba(0,0,0,.5);
+      cursor:default;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    .mangue-image-close{
+      position:absolute;
+      top:15px;
+      right:18px;
+      width:46px;
+      height:46px;
+      border:0;
+      border-radius:50%;
+      background:rgba(255,255,255,.95);
+      color:#111;
+      font-size:34px;
+      line-height:42px;
+      cursor:pointer;
+      z-index:2;
+      box-shadow:0 3px 12px rgba(0,0,0,.3);
+    }
+
+    .mangue-image-close:hover{
+      transform:scale(1.05);
+    }
+
+    .product-image{
+      cursor:zoom-in;
+    }
+
+    body.mangue-image-open{
+      overflow:hidden;
+    }
+
+  `;
+
+  document.head.appendChild(style);
+  document.body.appendChild(viewer);
+
+  const overlay =
+    viewer.querySelector(".mangue-image-overlay");
+
+  const closeButton =
+    viewer.querySelector(".mangue-image-close");
+
+  const largeImage =
+    viewer.querySelector(".mangue-image-large");
+
+
+  function closeViewer(){
+
+    viewer.classList.remove("open");
+
+    document.body.classList.remove(
+      "mangue-image-open"
+    );
+
+    largeImage.src = "";
+    largeImage.alt = "";
+
+  }
+
+
+  closeButton.addEventListener(
+    "click",
+    closeViewer
+  );
+
+
+  overlay.addEventListener(
+    "click",
+    e => {
+
+      if(e.target === overlay){
+        closeViewer();
+      }
+
+    }
+  );
+
+
+  largeImage.addEventListener(
+    "click",
+    e => {
+      e.stopPropagation();
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    e => {
+
+      if(
+        e.key === "Escape" &&
+        viewer.classList.contains("open")
+      ){
+
+        closeViewer();
+
+      }
+
+    }
+  );
+
+
+  window.mangueOpenImage = function(src, alt){
+
+    if(!src) return;
+
+    largeImage.src = src;
+    largeImage.alt = alt || "Producto";
+
+    viewer.classList.add("open");
+
+    document.body.classList.add(
+      "mangue-image-open"
+    );
+
+  };
 
 }
 
@@ -858,6 +1058,55 @@ $("#heroNext").onclick =
       top:450,
       behavior:"smooth"
     });
+
+
+/* =========================
+   VISOR DE IMÁGENES
+   EVENTO DELEGADO
+========================= */
+
+createImageViewer();
+
+
+grid.addEventListener(
+  "click",
+  e => {
+
+    const image =
+      e.target.closest(
+        ".product-image"
+      );
+
+    if(!image) return;
+
+    e.preventDefault();
+
+    const productId =
+      Number(
+        image.dataset.productImage
+      );
+
+    const product =
+      products.find(
+        p => p.id === productId
+      );
+
+    if(!product) return;
+
+    if(
+      typeof window.mangueOpenImage ===
+      "function"
+    ){
+
+      window.mangueOpenImage(
+        product.img,
+        product.name
+      );
+
+    }
+
+  }
+);
 
 
 /* =========================
