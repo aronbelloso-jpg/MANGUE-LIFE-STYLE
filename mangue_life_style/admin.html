@@ -7,17 +7,20 @@
 
   <style>
     *{box-sizing:border-box}
+
     body{
       margin:0;
       background:#f5f1e8;
       font-family:Arial,sans-serif;
       color:#222;
     }
+
     .wrap{
       max-width:1100px;
       margin:auto;
       padding:20px;
     }
+
     .box{
       background:#fff;
       padding:24px;
@@ -25,23 +28,27 @@
       box-shadow:0 5px 25px #0001;
       margin:20px 0;
     }
+
     .head{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:15px;
     }
+
     .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:15px;
     }
+
     label{
       display:grid;
       gap:7px;
       font-weight:bold;
       font-size:14px;
     }
+
     input,select,textarea{
       width:100%;
       padding:12px;
@@ -49,10 +56,12 @@
       border-radius:9px;
       font:inherit;
     }
+
     textarea{
       min-height:90px;
       resize:vertical;
     }
+
     button{
       border:0;
       border-radius:22px;
@@ -60,54 +69,81 @@
       font-weight:bold;
       cursor:pointer;
     }
+
     .gold{
       background:#d7a622;
       color:#111;
     }
+
     .danger{
       background:#e74c3c;
       color:white;
     }
+
     .secondary{
       background:#eee;
     }
+
     .hide{
       display:none!important;
     }
+
     .muted{
       color:#777;
     }
+
     .error{
       color:#c0392b;
       font-weight:bold;
     }
+
     .success{
       color:#16803c;
       font-weight:bold;
     }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:20px;
+
+    .option-box{
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:15px;
+      margin-top:12px;
+      background:#fafafa;
     }
-    th,td{
-      padding:11px 8px;
-      border-bottom:1px solid #eee;
-      text-align:left;
-      font-size:14px;
-    }
-    .product-img{
-      width:55px;
-      height:55px;
-      object-fit:cover;
-      border-radius:8px;
-      background:#eee;
-    }
-    .actions{
+
+    .option-header{
       display:flex;
-      gap:6px;
-      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
     }
+
+    .value-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .variant{
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:15px;
+      margin-top:12px;
+      background:white;
+    }
+
+    .variant-title{
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+
+    .variant-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
     .preview{
       max-width:180px;
       max-height:180px;
@@ -116,21 +152,49 @@
       margin-top:10px;
       display:none;
     }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    th,td{
+      padding:11px 8px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+      font-size:14px;
+    }
+
+    .product-img{
+      width:55px;
+      height:55px;
+      object-fit:cover;
+      border-radius:8px;
+      background:#eee;
+    }
+
+    .actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
     @media(max-width:700px){
-      .grid{
+
+      .grid,
+      .variant-grid{
         grid-template-columns:1fr;
       }
+
       .wrap{
         padding:10px;
       }
+
       .box{
         padding:18px;
       }
-      table{
-        display:block;
-        overflow-x:auto;
-        white-space:nowrap;
-      }
+
       .head{
         align-items:flex-start;
         flex-direction:column;
@@ -144,69 +208,101 @@
 <div class="wrap">
 
   <div class="box head">
+
     <div>
       <strong>MANGUE LIFE STYLE</strong>
       <div class="muted">Panel de administración</div>
     </div>
 
     <div>
-      <button class="secondary" onclick="window.location.href='index.html'">
+
+      <button
+        class="secondary"
+        onclick="window.location.href='index.html'">
         Ver tienda
       </button>
-      <button class="danger" id="logoutBtn">
+
+      <button
+        class="danger"
+        id="logoutBtn">
         Salir
       </button>
+
     </div>
+
   </div>
 
+
   <!-- LOGIN -->
+
   <section id="loginBox" class="box">
+
     <h2>Acceso administrador</h2>
 
     <form id="loginForm">
 
       <label>
         Correo electrónico
-        <input id="email" type="email" required autocomplete="email">
+        <input
+          id="email"
+          type="email"
+          required
+          autocomplete="email">
       </label>
 
       <br>
 
       <label>
         Contraseña
-        <input id="password" type="password" required autocomplete="current-password">
+        <input
+          id="password"
+          type="password"
+          required
+          autocomplete="current-password">
       </label>
 
       <br>
 
-      <button class="gold" type="submit">
+      <button
+        class="gold"
+        type="submit">
         Entrar
       </button>
 
     </form>
 
     <p id="loginMessage" class="muted"></p>
+
   </section>
 
 
   <!-- APP -->
+
   <section id="appBox" class="box hide">
 
     <div class="head">
+
       <div>
+
         <h2>Productos</h2>
+
         <p class="muted">
-          Administra precios, stock, fotografías y productos.
+          Administra productos, opciones, variantes, precios y stock.
         </p>
+
       </div>
 
-      <button id="newProductBtn" class="gold">
+      <button
+        id="newProductBtn"
+        class="gold">
         + Nuevo producto
       </button>
+
     </div>
 
 
     <!-- FORMULARIO -->
+
     <div id="formBox" class="box hide">
 
       <h3 id="formTitle">
@@ -224,58 +320,180 @@
 
           <label>
             Precio FCFA
-            <input id="price" type="number" min="0" required>
+            <input
+              id="price"
+              type="number"
+              min="0"
+              required>
           </label>
 
           <label>
             Categoría
+
             <select id="category">
-              <option>Perfumes</option>
-              <option>Ropa</option>
-              <option>Pelucas</option>
-              <option>Zapatos</option>
-              <option>Cosméticos</option>
+
+              <option value="Perfumes">
+                Perfumes
+              </option>
+
+              <option value="Ropa">
+                Ropa
+              </option>
+
+              <option value="Pelucas">
+                Pelucas
+              </option>
+
+              <option value="Zapatos">
+                Zapatos
+              </option>
+
+              <option value="Cosméticos">
+                Cosméticos
+              </option>
+
             </select>
+
           </label>
 
           <label>
-            Stock
-            <input id="stock" type="number" min="0" value="0">
+            Stock general
+            <input
+              id="stock"
+              type="number"
+              min="0"
+              value="0">
           </label>
 
           <label>
             Oferta
+
             <select id="offer">
-              <option value="false">No</option>
-              <option value="true">Sí</option>
+
+              <option value="false">
+                No
+              </option>
+
+              <option value="true">
+                Sí
+              </option>
+
             </select>
+
           </label>
 
           <label>
             Fotografía
-            <input id="imageFile" type="file" accept="image/*">
+
+            <input
+              id="imageFile"
+              type="file"
+              accept="image/*">
+
           </label>
 
         </div>
 
+
         <br>
+
 
         <label>
+
           Descripción
+
           <textarea id="description"></textarea>
+
         </label>
 
-        <img id="preview" class="preview">
+
+        <img
+          id="preview"
+          class="preview">
+
+
+        <!-- OPCIONES -->
+
+        <div
+          class="option-box">
+
+          <div class="option-header">
+
+            <div>
+
+              <strong>
+                Opciones del producto
+              </strong>
+
+              <div class="muted">
+                Color, talla, ML, modelo, etc.
+              </div>
+
+            </div>
+
+            <button
+              type="button"
+              class="secondary"
+              id="addOptionBtn">
+
+              + Añadir opción
+
+            </button>
+
+          </div>
+
+          <div id="optionsContainer"></div>
+
+        </div>
+
+
+        <!-- VARIANTES -->
+
+        <div
+          class="option-box">
+
+          <div class="option-header">
+
+            <div>
+
+              <strong>
+                Variantes
+              </strong>
+
+              <div class="muted">
+                Precio y stock para cada combinación.
+              </div>
+
+            </div>
+
+          </div>
+
+          <div id="variantsContainer"></div>
+
+        </div>
+
 
         <br>
 
-        <button class="gold" type="submit">
+
+        <button
+          class="gold"
+          type="submit">
+
           Guardar producto
+
         </button>
 
-        <button class="secondary" type="button" id="cancelBtn">
+
+        <button
+          class="secondary"
+          type="button"
+          id="cancelBtn">
+
           Cancelar
+
         </button>
+
 
         <p id="formMessage"></p>
 
@@ -285,18 +503,23 @@
 
 
     <!-- PRODUCTOS -->
+
     <div style="overflow-x:auto">
 
       <table>
 
         <thead>
+
           <tr>
+
             <th>Foto</th>
             <th>Producto</th>
             <th>Precio</th>
             <th>Stock</th>
             <th>Acciones</th>
+
           </tr>
+
         </thead>
 
         <tbody id="productsBody"></tbody>
@@ -312,24 +535,17 @@
 
 <script type="module">
 
-/*
-  CONFIGURACIÓN SUPABASE
-*/
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
 
 const SUPABASE_URL =
   "https://ebhqsmxrrbcekfyiqhmo.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_N4xC25_5dW0O4LCKHERCDA_fBFNNfnZ";
-
-
-/*
-  CLIENTE SUPABASE
-*/
-
-import {
-  createClient
-} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 
 const supabase =
@@ -339,51 +555,68 @@ const supabase =
   );
 
 
-/*
-  ELEMENTOS
-*/
-
 const loginBox =
   document.getElementById("loginBox");
+
 
 const appBox =
   document.getElementById("appBox");
 
+
 const loginForm =
   document.getElementById("loginForm");
+
 
 const loginMessage =
   document.getElementById("loginMessage");
 
+
 const productForm =
   document.getElementById("productForm");
+
 
 const formBox =
   document.getElementById("formBox");
 
+
 const formTitle =
   document.getElementById("formTitle");
+
 
 const formMessage =
   document.getElementById("formMessage");
 
+
 const productsBody =
   document.getElementById("productsBody");
 
+
 const preview =
   document.getElementById("preview");
+
 
 const imageFile =
   document.getElementById("imageFile");
 
 
+const category =
+  document.getElementById("category");
+
+
+const optionsContainer =
+  document.getElementById("optionsContainer");
+
+
+const variantsContainer =
+  document.getElementById("variantsContainer");
+
+
 let editingId = null;
+
 let editingImage = null;
 
+let options = [];
 
-/*
-  FORMATO PRECIO
-*/
 
 function money(value){
 
@@ -394,28 +627,513 @@ function money(value){
 }
 
 
-/*
-  MENSAJES
-*/
+function showLoginMessage(
+  text,
+  error=false
+){
 
-function showLoginMessage(text,error=false){
-
-  loginMessage.textContent = text;
+  loginMessage.textContent =
+    text;
 
   loginMessage.className =
-    error ? "error" : "success";
+    error
+      ? "error"
+      : "success";
 
 }
 
 
-function showFormMessage(text,error=false){
+function showFormMessage(
+  text,
+  error=false
+){
 
-  formMessage.textContent = text;
+  formMessage.textContent =
+    text;
 
   formMessage.className =
-    error ? "error" : "success";
+    error
+      ? "error"
+      : "success";
 
 }
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/*
+  OPCIONES PREDEFINIDAS
+*/
+
+const categoryOptions = {
+
+  "Perfumes":[
+    "ML",
+    "Tipo",
+    "Intensidad"
+  ],
+
+  "Ropa":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Pelucas":[
+    "Color",
+    "Talla",
+    "Modelo",
+    "Largo",
+    "Tipo"
+  ],
+
+  "Zapatos":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Cosméticos":[
+    "Tono",
+    "Tamaño",
+    "Presentación"
+  ]
+
+};
+
+
+/*
+  CREAR OPCIÓN
+*/
+
+function addOption(
+  name=""
+){
+
+  const id =
+    crypto.randomUUID();
+
+  options.push({
+
+    id,
+    name,
+    values:[]
+
+  });
+
+  renderOptions();
+
+  renderVariants();
+
+}
+
+
+/*
+  MOSTRAR OPCIONES
+*/
+
+function renderOptions(){
+
+  optionsContainer.innerHTML = "";
+
+  options.forEach(
+    option=>{
+
+      const box =
+        document.createElement("div");
+
+      box.className =
+        "option-box";
+
+      box.dataset.id =
+        option.id;
+
+
+      box.innerHTML = `
+
+        <div class="option-header">
+
+          <input
+            class="option-name"
+            placeholder="Nombre de la opción"
+            value="${escapeHtml(option.name)}">
+
+          <button
+            type="button"
+            class="danger remove-option">
+
+            Eliminar
+
+          </button>
+
+        </div>
+
+        <div class="values-container"></div>
+
+        <button
+          type="button"
+          class="secondary add-value">
+
+          + Añadir valor
+
+        </button>
+
+      `;
+
+
+      const valuesContainer =
+        box.querySelector(
+          ".values-container"
+        );
+
+
+      option.values.forEach(
+        (value,index)=>{
+
+          const row =
+            document.createElement("div");
+
+          row.className =
+            "value-row";
+
+
+          row.innerHTML = `
+
+            <input
+              class="option-value"
+              value="${escapeHtml(value)}"
+              placeholder="Ej. Negro">
+
+            <button
+              type="button"
+              class="danger remove-value">
+
+              ×
+
+            </button>
+
+          `;
+
+
+          row
+            .querySelector(
+              ".option-value"
+            )
+            .addEventListener(
+              "input",
+              event=>{
+
+                option.values[index] =
+                  event.target.value;
+
+                renderVariants();
+
+              }
+            );
+
+
+          row
+            .querySelector(
+              ".remove-value"
+            )
+            .addEventListener(
+              "click",
+              ()=>{
+
+                option.values.splice(
+                  index,
+                  1
+                );
+
+                renderOptions();
+
+                renderVariants();
+
+              }
+            );
+
+
+          valuesContainer.appendChild(
+            row
+          );
+
+        }
+      );
+
+
+      box
+        .querySelector(
+          ".option-name"
+        )
+        .addEventListener(
+          "input",
+          event=>{
+
+            option.name =
+              event.target.value;
+
+            renderVariants();
+
+          }
+        );
+
+
+      box
+        .querySelector(
+          ".remove-option"
+        )
+        .addEventListener(
+          "click",
+          ()=>{
+
+            options =
+              options.filter(
+                item=>item.id !== option.id
+              );
+
+            renderOptions();
+
+            renderVariants();
+
+          }
+        );
+
+
+      box
+        .querySelector(
+          ".add-value"
+        )
+        .addEventListener(
+          "click",
+          ()=>{
+
+            option.values.push("");
+
+            renderOptions();
+
+            renderVariants();
+
+          }
+        );
+
+
+      optionsContainer.appendChild(
+        box
+      );
+
+    }
+  );
+
+}
+
+
+/*
+  VARIANTES
+*/
+
+function renderVariants(){
+
+  variantsContainer.innerHTML = "";
+
+
+  const validOptions =
+    options.filter(
+      option =>
+        option.name.trim()
+        &&
+        option.values.some(
+          value =>
+            value.trim()
+        )
+    );
+
+
+  if(!validOptions.length){
+
+    variantsContainer.innerHTML =
+      `<p class="muted">
+        Añade opciones y valores para crear variantes.
+      </p>`;
+
+    return;
+
+  }
+
+
+  let combinations =
+    [{}];
+
+
+  validOptions.forEach(
+    option=>{
+
+      const values =
+        option.values
+          .filter(
+            value =>
+              value.trim()
+          );
+
+
+      const next = [];
+
+
+      combinations.forEach(
+        combination=>{
+
+          values.forEach(
+            value=>{
+
+              next.push({
+
+                ...combination,
+
+                [option.name]:
+                  value
+
+              });
+
+            }
+          );
+
+        }
+      );
+
+
+      combinations =
+        next;
+
+    }
+  );
+
+
+  combinations.forEach(
+    (combination,index)=>{
+
+      const variant =
+        document.createElement("div");
+
+      variant.className =
+        "variant";
+
+
+      const title =
+        Object.entries(combination)
+          .map(
+            ([key,value]) =>
+              `${escapeHtml(key)}: ${escapeHtml(value)}`
+          )
+          .join(" · ");
+
+
+      variant.innerHTML = `
+
+        <div class="variant-title">
+          ${title}
+        </div>
+
+        <div class="variant-grid">
+
+          <label>
+            Precio FCFA
+            <input
+              type="number"
+              min="0"
+              class="variant-price"
+              value="${document.getElementById("price").value || 0}">
+          </label>
+
+          <label>
+            Stock
+            <input
+              type="number"
+              min="0"
+              class="variant-stock"
+              value="0">
+          </label>
+
+        </div>
+
+      `;
+
+
+      variantsContainer.appendChild(
+        variant
+      );
+
+    }
+  );
+
+}
+
+
+/*
+  CATEGORÍA
+*/
+
+category.addEventListener(
+  "change",
+  ()=>{
+
+    if(
+      !confirm(
+        "¿Quieres cargar las opciones recomendadas para esta categoría?"
+      )
+    ){
+
+      return;
+
+    }
+
+
+    options = [];
+
+
+    const defaults =
+      categoryOptions[
+        category.value
+      ] || [];
+
+
+    defaults.forEach(
+      name=>{
+        addOption(name);
+      }
+    );
+
+
+    renderOptions();
+
+    renderVariants();
+
+  }
+);
+
+
+/*
+  AÑADIR OPCIÓN
+*/
+
+document
+  .getElementById("addOptionBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      addOption("");
+
+    }
+  );
 
 
 /*
@@ -424,28 +1142,38 @@ function showFormMessage(text,error=false){
 
 loginForm.addEventListener(
   "submit",
-  async(event)=>{
+  async event=>{
 
     event.preventDefault();
 
-    showLoginMessage("Comprobando acceso...");
+    showLoginMessage(
+      "Comprobando acceso..."
+    );
+
 
     const email =
-      document.getElementById("email").value.trim();
+      document
+        .getElementById("email")
+        .value
+        .trim();
+
 
     const password =
-      document.getElementById("password").value;
+      document
+        .getElementById("password")
+        .value;
 
 
     const {
       error
     } =
-    await supabase.auth.signInWithPassword({
+      await supabase.auth
+        .signInWithPassword({
 
-      email,
-      password
+          email,
+          password
 
-    });
+        });
 
 
     if(error){
@@ -463,10 +1191,6 @@ loginForm.addEventListener(
     }
 
 
-    showLoginMessage(
-      "Acceso correcto."
-    );
-
     await checkSession();
 
   }
@@ -474,7 +1198,7 @@ loginForm.addEventListener(
 
 
 /*
-  COMPROBAR SESIÓN
+  SESIÓN
 */
 
 async function checkSession(){
@@ -482,22 +1206,34 @@ async function checkSession(){
   const {
     data
   } =
-  await supabase.auth.getSession();
+    await supabase.auth
+      .getSession();
 
 
   if(data.session){
 
-    loginBox.classList.add("hide");
+    loginBox
+      .classList
+      .add("hide");
 
-    appBox.classList.remove("hide");
+
+    appBox
+      .classList
+      .remove("hide");
+
 
     await loadProducts();
 
   }else{
 
-    loginBox.classList.remove("hide");
+    loginBox
+      .classList
+      .remove("hide");
 
-    appBox.classList.add("hide");
+
+    appBox
+      .classList
+      .add("hide");
 
   }
 
@@ -505,7 +1241,7 @@ async function checkSession(){
 
 
 /*
-  CARGAR PRODUCTOS
+  PRODUCTOS
 */
 
 async function loadProducts(){
@@ -518,10 +1254,10 @@ async function loadProducts(){
     data,
     error
   } =
-  await supabase
-    .from("products")
-    .select("*")
-    .order("id",{ascending:true});
+    await supabase
+      .from("products")
+      .select("*")
+      .order("id",{ascending:true});
 
 
   if(error){
@@ -547,109 +1283,121 @@ async function loadProducts(){
 
 
   productsBody.innerHTML =
-    data.map(product=>{
+    data.map(
+      product=>{
 
-      const image =
-        product.image_url
-        ?
-        `<img class="product-img" src="${product.image_url}">`
-        :
-        `<div class="product-img"></div>`;
+        const image =
+          product.image_url
+
+            ? `<img
+                class="product-img"
+                src="${escapeHtml(product.image_url)}">`
+
+            : `<div
+                class="product-img">
+              </div>`;
 
 
-      return `
+        return `
 
-        <tr>
+          <tr>
 
-          <td>${image}</td>
+            <td>
+              ${image}
+            </td>
 
-          <td>
-            <strong>${escapeHtml(product.name)}</strong>
-            <br>
-            <small>${escapeHtml(product.category)}</small>
-          </td>
+            <td>
 
-          <td>
-            ${money(product.price)}
-          </td>
+              <strong>
+                ${escapeHtml(product.name)}
+              </strong>
 
-          <td>
-            ${product.stock ?? 0}
-          </td>
+              <br>
 
-          <td>
+              <small>
+                ${escapeHtml(product.category)}
+              </small>
 
-            <div class="actions">
+            </td>
 
-              <button
-                class="gold"
-                data-edit="${product.id}">
-                Editar
-              </button>
+            <td>
+              ${money(product.price)}
+            </td>
 
-              <button
-                class="danger"
-                data-delete="${product.id}">
-                Eliminar
-              </button>
+            <td>
+              ${product.stock ?? 0}
+            </td>
 
-            </div>
+            <td>
 
-          </td>
+              <div class="actions">
 
-        </tr>
+                <button
+                  class="gold"
+                  data-edit="${product.id}">
 
-      `;
+                  Editar
 
-    }).join("");
+                </button>
+
+                <button
+                  class="danger"
+                  data-delete="${product.id}">
+
+                  Eliminar
+
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        `;
+
+      }
+    ).join("");
 
 
   document
     .querySelectorAll("[data-edit]")
-    .forEach(button=>{
+    .forEach(
+      button=>{
 
-      button.addEventListener(
-        "click",
-        ()=>{
-          editProduct(
-            Number(button.dataset.edit)
-          );
-        }
-      );
+        button.addEventListener(
+          "click",
+          ()=>{
+            editProduct(
+              Number(
+                button.dataset.edit
+              )
+            );
+          }
+        );
 
-    });
+      }
+    );
 
 
   document
     .querySelectorAll("[data-delete]")
-    .forEach(button=>{
+    .forEach(
+      button=>{
 
-      button.addEventListener(
-        "click",
-        ()=>{
-          deleteProduct(
-            Number(button.dataset.delete)
-          );
-        }
-      );
+        button.addEventListener(
+          "click",
+          ()=>{
+            deleteProduct(
+              Number(
+                button.dataset.delete
+              )
+            );
+          }
+        );
 
-    });
-
-}
-
-
-/*
-  ESCAPAR HTML
-*/
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+      }
+    );
 
 }
 
@@ -665,17 +1413,37 @@ document
     ()=>{
 
       editingId = null;
+
       editingImage = null;
+
+      options = [];
+
 
       formTitle.textContent =
         "Nuevo producto";
 
+
       productForm.reset();
+
+
+      optionsContainer.innerHTML =
+        "";
+
+
+      variantsContainer.innerHTML =
+        `<p class="muted">
+          Añade opciones y valores para crear variantes.
+        </p>`;
+
 
       preview.style.display =
         "none";
 
-      formBox.classList.remove("hide");
+
+      formBox
+        .classList
+        .remove("hide");
+
 
       showFormMessage("");
 
@@ -693,11 +1461,11 @@ async function editProduct(id){
     data,
     error
   } =
-  await supabase
-    .from("products")
-    .select("*")
-    .eq("id",id)
-    .single();
+    await supabase
+      .from("products")
+      .select("*")
+      .eq("id",id)
+      .single();
 
 
   if(error){
@@ -724,17 +1492,22 @@ async function editProduct(id){
   document.getElementById("name").value =
     data.name || "";
 
+
   document.getElementById("price").value =
     data.price || 0;
+
 
   document.getElementById("category").value =
     data.category || "Perfumes";
 
+
   document.getElementById("stock").value =
     data.stock || 0;
 
+
   document.getElementById("offer").value =
     String(Boolean(data.offer));
+
 
   document.getElementById("description").value =
     data.description || "";
@@ -756,7 +1529,90 @@ async function editProduct(id){
   }
 
 
-  formBox.classList.remove("hide");
+  options = [];
+
+
+  await loadExistingOptions(id);
+
+
+  formBox
+    .classList
+    .remove("hide");
+
+}
+
+
+/*
+  CARGAR OPCIONES EXISTENTES
+*/
+
+async function loadExistingOptions(productId){
+
+  const {
+    data,
+    error
+  } =
+    await supabase
+      .from("product_options")
+      .select(`
+        id,
+        name,
+        sort_order,
+        product_option_values(
+          id,
+          value,
+          sort_order
+        )
+      `)
+      .eq(
+        "product_id",
+        productId
+      )
+      .order(
+        "sort_order",
+        {ascending:true}
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  options =
+    (data || []).map(
+      option=>({
+
+        id:
+          String(option.id),
+
+        name:
+          option.name,
+
+        values:
+          (option.product_option_values || [])
+            .sort(
+              (a,b) =>
+                a.sort_order
+                -
+                b.sort_order
+            )
+            .map(
+              value =>
+                value.value
+            )
+
+      })
+    );
+
+
+  renderOptions();
+
+  renderVariants();
 
 }
 
@@ -775,7 +1631,9 @@ async function uploadImage(file){
 
 
   const extension =
-    file.name.split(".").pop()
+    file.name
+      .split(".")
+      .pop()
       .toLowerCase();
 
 
@@ -790,15 +1648,15 @@ async function uploadImage(file){
   const {
     error
   } =
-  await supabase.storage
-    .from("product-images")
-    .upload(
-      filePath,
-      file,
-      {
-        upsert:false
-      }
-    );
+    await supabase.storage
+      .from("product-images")
+      .upload(
+        filePath,
+        file,
+        {
+          upsert:false
+        }
+      );
 
 
   if(error){
@@ -811,12 +1669,131 @@ async function uploadImage(file){
   const {
     data
   } =
-  supabase.storage
-    .from("product-images")
-    .getPublicUrl(filePath);
+    supabase.storage
+      .from("product-images")
+      .getPublicUrl(
+        filePath
+      );
 
 
   return data.publicUrl;
+
+}
+
+
+/*
+  GUARDAR OPCIONES
+*/
+
+async function saveOptions(
+  productId
+){
+
+  await supabase
+    .from("product_options")
+    .delete()
+    .eq(
+      "product_id",
+      productId
+    );
+
+
+  const validOptions =
+    options.filter(
+      option =>
+        option.name.trim()
+        &&
+        option.values.some(
+          value =>
+            value.trim()
+        )
+    );
+
+
+  for(
+    let i=0;
+    i<validOptions.length;
+    i++
+  ){
+
+    const option =
+      validOptions[i];
+
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from("product_options")
+        .insert({
+
+          product_id:
+            productId,
+
+          name:
+            option.name.trim(),
+
+          sort_order:
+            i
+
+        })
+        .select()
+        .single();
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    const values =
+      option.values
+        .filter(
+          value =>
+            value.trim()
+        );
+
+
+    if(values.length){
+
+      const rows =
+        values.map(
+          (value,index)=>({
+
+            option_id:
+              data.id,
+
+            value:
+              value.trim(),
+
+            sort_order:
+              index
+
+          })
+        );
+
+
+      const {
+        error:
+          valuesError
+      } =
+        await supabase
+          .from("product_option_values")
+          .insert(rows);
+
+
+      if(valuesError){
+
+        throw valuesError;
+
+      }
+
+    }
+
+  }
 
 }
 
@@ -827,7 +1804,7 @@ async function uploadImage(file){
 
 productForm.addEventListener(
   "submit",
-  async(event)=>{
+  async event=>{
 
     event.preventDefault();
 
@@ -849,27 +1826,41 @@ productForm.addEventListener(
       const product = {
 
         name:
-          document.getElementById("name").value.trim(),
+          document
+            .getElementById("name")
+            .value
+            .trim(),
 
         price:
           Number(
-            document.getElementById("price").value
+            document
+              .getElementById("price")
+              .value
           ),
 
         category:
-          document.getElementById("category").value,
+          document
+            .getElementById("category")
+            .value,
 
         stock:
           Number(
-            document.getElementById("stock").value || 0
+            document
+              .getElementById("stock")
+              .value || 0
           ),
 
         offer:
-          document.getElementById("offer").value
-          === "true",
+          document
+            .getElementById("offer")
+            .value
+            === "true",
 
         description:
-          document.getElementById("description").value.trim(),
+          document
+            .getElementById("description")
+            .value
+            .trim(),
 
         image_url:
           imageUrl || null
@@ -886,14 +1877,19 @@ productForm.addEventListener(
           await supabase
             .from("products")
             .update(product)
-            .eq("id",editingId);
+            .eq(
+              "id",
+              editingId
+            );
 
       }else{
 
         result =
           await supabase
             .from("products")
-            .insert(product);
+            .insert(product)
+            .select()
+            .single();
 
       }
 
@@ -905,6 +1901,17 @@ productForm.addEventListener(
       }
 
 
+      const productId =
+        editingId
+          ? editingId
+          : result.data.id;
+
+
+      await saveOptions(
+        productId
+      );
+
+
       showFormMessage(
         "Producto guardado correctamente."
       );
@@ -914,8 +1921,17 @@ productForm.addEventListener(
 
       editingImage = null;
 
+      options = [];
+
 
       productForm.reset();
+
+      optionsContainer.innerHTML =
+        "";
+
+      variantsContainer.innerHTML =
+        "";
+
 
       preview.style.display =
         "none";
@@ -926,7 +1942,9 @@ productForm.addEventListener(
 
       setTimeout(
         ()=>{
-          formBox.classList.add("hide");
+          formBox
+            .classList
+            .add("hide");
         },
         700
       );
@@ -937,7 +1955,8 @@ productForm.addEventListener(
       console.error(error);
 
       showFormMessage(
-        "Error: " + error.message,
+        "Error: "
+        + error.message,
         true
       );
 
@@ -948,7 +1967,7 @@ productForm.addEventListener(
 
 
 /*
-  ELIMINAR
+  ELIMINAR PRODUCTO
 */
 
 async function deleteProduct(id){
@@ -967,10 +1986,13 @@ async function deleteProduct(id){
   const {
     error
   } =
-  await supabase
-    .from("products")
-    .delete()
-    .eq("id",id);
+    await supabase
+      .from("products")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
 
 
   if(error){
@@ -1000,9 +2022,19 @@ document
     "click",
     ()=>{
 
-      formBox.classList.add("hide");
+      formBox
+        .classList
+        .add("hide");
 
       productForm.reset();
+
+      options = [];
+
+      optionsContainer.innerHTML =
+        "";
+
+      variantsContainer.innerHTML =
+        "";
 
       preview.style.display =
         "none";
@@ -1026,6 +2058,7 @@ imageFile.addEventListener(
     const file =
       imageFile.files[0];
 
+
     if(!file){
 
       preview.style.display =
@@ -1038,6 +2071,7 @@ imageFile.addEventListener(
 
     preview.src =
       URL.createObjectURL(file);
+
 
     preview.style.display =
       "block";
