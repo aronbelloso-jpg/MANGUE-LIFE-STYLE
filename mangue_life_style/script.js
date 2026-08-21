@@ -477,137 +477,51 @@ function changeQty(id,n){
   saveCart();
 
 }
+/* ========================= PEDIDO WHATSAPP ========================= */
 
+function submitOrder(e) {
+  e.preventDefault();
+  if (!cart.length) return;
 
-/* =========================
-   ACTUALIZAR CARRITO
-========================= */
+  const name = $("#customerName").value.trim();
+  const phone = $("#customerPhone").value.trim();
+  const address = $("#customerAddress").value.trim();
+  const delivery = $("#deliveryMethod").value;
+  const notes = $("#customerNotes").value.trim();
 
-function updateCart(){
+  if (!name || !phone || !address) {
+    alert("Completa nombre, teléfono y dirección.");
+    return;
+  }
 
-  const count =
-    cart.reduce(
-      (s,x) => s + x.qty,
-      0
-    );
+  const lines = cart.map(x => {
+    const p = products.find(y => y.id === x.id);
+    if (!p) return "";
+    
+    const specs = [
+      p.talla ? `Talla: ${p.talla}` : '',
+      p.color ? `Color: ${p.color}` : '',
+      p.genero
+    ].filter(Boolean).join(', ');
+    
+    const specText = specs ? ` (${specs})` : '';
+    
+    return `• ${p.name}${specText} x${x.qty} — ${p.price == null ? "Consultar precio" : money(p.price * x.qty)}`;
+  })
+  .filter(Boolean)
+  .join("\n");
 
+  const total = cart.reduce((s, x) => {
+    const p = products.find(y => y.id === x.id);
+    return s + (!p || p.price == null ? 0 : p.price * x.qty);
+  }, 0);
 
-  $("#cartCount").textContent =
-    count;
+  const message = `Hola Mangue Life Style. Quiero realizar este pedido:\n\n${lines}\n\nTOTAL: ${money(total)}\n\nDATOS DEL CLIENTE\nNombre: ${name}\nTeléfono: ${phone}\nDirección: ${address}\nEntrega: ${delivery}\nObservaciones: ${notes || "Ninguna"}\n\nPor favor, confirmen disponibilidad y forma de pago.`;
 
-
-  const items =
-    cart
-      .map(x => {
-
-        const product =
-          products.find(
-            p => p.id === x.id
-          );
-
-        if(!product) return null;
-
-        return {
-          ...product,
-          qty:x.qty
-        };
-
-      })
-      .filter(Boolean);
-
-
-  $("#cartItems").innerHTML =
-    items.length
-
-    ?
-
-    items.map(p => `
-
-      <div class="cart-row">
-
-        <img
-          src="${p.img}"
-          alt="${escapeHtml(p.name)}"
-        >
-
-        <div>
-
-          <h4>
-            ${escapeHtml(p.name)}
-          </h4>
-
-          <small>
-            ${money(p.price)}
-          </small>
-
-          <div class="qty">
-
-            <button
-              type="button"
-              onclick="changeQty(${p.id},-1)"
-            >
-              −
-            </button>
-
-            <b>
-              ${p.qty}
-            </b>
-
-            <button
-              type="button"
-              onclick="changeQty(${p.id},1)"
-            >
-              +
-            </button>
-
-          </div>
-
-        </div>
-
-        <b>
-          ${
-            p.price == null
-            ? "Consultar"
-            : money(p.price * p.qty)
-          }
-        </b>
-
-      </div>
-
-    `).join("")
-
-    :
-
-    `
-      <p
-        style="
-          text-align:center;
-          color:#777;
-          padding:40px 0
-        "
-      >
-        Tu carrito está vacío.
-      </p>
-    `;
-
-
-  const total =
-    items.reduce(
-      (s,p) =>
-        s +
-        (
-          p.price == null
-          ? 0
-          : p.price * p.qty
-        ),
-      0
-    );
-
-
-  $("#cartTotal").textContent =
-    money(total);
-
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank");
 }
+
+
 
 
 /* =========================
