@@ -173,202 +173,111 @@ function renderProducts() {
   }).join('');
 }
 
-/* =========================
-   VISOR DE IMÁGENES
-========================= */
+/* ========================= VISOR DE IMÁGENES Y DETALLES ========================= */
 
-function createImageViewer(){
-
-  if(document.getElementById("mangueImageViewer")){
-    return;
-  }
+function createImageViewer() {
+  if (document.getElementById("mangueImageViewer")) return;
 
   const viewer = document.createElement("div");
-
   viewer.id = "mangueImageViewer";
-
   viewer.innerHTML = `
-    <div
-      class="mangue-image-overlay"
-      aria-label="Cerrar imagen"
-    >
-
-      <button
-        type="button"
-        class="mangue-image-close"
-        aria-label="Cerrar"
-      >
-        ×
-      </button>
-
-      <img
-        class="mangue-image-large"
-        src=""
-        alt=""
-      >
-
+    <div class="mangue-image-overlay" aria-label="Cerrar vista">
+      <div class="mangue-modal-card">
+        <button type="button" class="mangue-image-close" aria-label="Cerrar">×</button>
+        <div class="mangue-modal-img-box">
+          <img class="mangue-image-large" src="" alt="">
+        </div>
+        <div class="mangue-modal-details">
+          <span class="category-tag modal-cat"></span>
+          <h2 class="modal-title" style="margin:8px 0 6px; font-size:1.3rem; color:#111;"></h2>
+          <div class="modal-specs" style="margin:10px 0; font-size:0.9rem; color:#444; background:#f4f4f4; padding:8px 12px; border-radius:6px;"></div>
+          <div class="modal-price-box" style="margin:12px 0;"></div>
+          <p class="modal-desc" style="font-size:0.9rem; color:#555; line-height:1.4; margin-bottom:18px;"></p>
+          <div class="modal-action"></div>
+        </div>
+      </div>
     </div>
   `;
 
   const style = document.createElement("style");
-
   style.textContent = `
-
-    #mangueImageViewer{
-      position:fixed;
-      inset:0;
-      z-index:99999;
-      display:none;
+    #mangueImageViewer { position: fixed; inset: 0; z-index: 99999; display: none; }
+    #mangueImageViewer.open { display: block; }
+    .mangue-image-overlay {
+      position: absolute; inset: 0; background: rgba(0, 0, 0, 0.82);
+      display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box;
     }
-
-    #mangueImageViewer.open{
-      display:block;
+    .mangue-modal-card {
+      position: relative; background: #fff; border-radius: 14px; max-width: 750px; width: 100%;
+      max-height: 90vh; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+      padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); box-sizing: border-box; text-align: left;
     }
-
-    .mangue-image-overlay{
-      position:absolute;
-      inset:0;
-      background:rgba(0,0,0,.88);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:25px;
-      cursor:zoom-out;
-      box-sizing:border-box;
+    @media (max-width: 650px) {
+      .mangue-modal-card { grid-template-columns: 1fr; padding: 18px; max-height: 85vh; }
     }
-
-    .mangue-image-large{
-      display:block;
-      max-width:95vw;
-      max-height:90vh;
-      width:auto;
-      height:auto;
-      object-fit:contain;
-      border-radius:10px;
-      box-shadow:0 10px 40px rgba(0,0,0,.5);
-      cursor:default;
-      user-select:none;
-      -webkit-user-select:none;
+    .mangue-modal-img-box { display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 10px; overflow: hidden; padding: 10px; }
+    .mangue-image-large { max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 8px; }
+    .mangue-image-close {
+      position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border: 0;
+      border-radius: 50%; background: #eee; color: #111; font-size: 22px; line-height: 34px;
+      cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
     }
-
-    .mangue-image-close{
-      position:absolute;
-      top:15px;
-      right:18px;
-      width:46px;
-      height:46px;
-      border:0;
-      border-radius:50%;
-      background:rgba(255,255,255,.95);
-      color:#111;
-      font-size:34px;
-      line-height:42px;
-      cursor:pointer;
-      z-index:2;
-      box-shadow:0 3px 12px rgba(0,0,0,.3);
-    }
-
-    .mangue-image-close:hover{
-      transform:scale(1.05);
-    }
-
-    .product-image{
-      cursor:zoom-in;
-    }
-
-    body.mangue-image-open{
-      overflow:hidden;
-    }
-
+    .mangue-image-close:hover { background: #ddd; }
+    body.mangue-image-open { overflow: hidden; }
   `;
 
   document.head.appendChild(style);
   document.body.appendChild(viewer);
 
-  const overlay =
-    viewer.querySelector(".mangue-image-overlay");
+  const overlay = viewer.querySelector(".mangue-image-overlay");
+  const closeButton = viewer.querySelector(".mangue-image-close");
+  const modalCard = viewer.querySelector(".mangue-modal-card");
 
-  const closeButton =
-    viewer.querySelector(".mangue-image-close");
-
-  const largeImage =
-    viewer.querySelector(".mangue-image-large");
-
-
-  function closeViewer(){
-
+  function closeViewer() {
     viewer.classList.remove("open");
-
-    document.body.classList.remove(
-      "mangue-image-open"
-    );
-
-    largeImage.src = "";
-    largeImage.alt = "";
-
+    document.body.classList.remove("mangue-image-open");
   }
 
+  closeButton.addEventListener("click", closeViewer);
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeViewer(); });
+  modalCard.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && viewer.classList.contains("open")) closeViewer();
+  });
 
-  closeButton.addEventListener(
-    "click",
-    closeViewer
-  );
-
-
-  overlay.addEventListener(
-    "click",
-    e => {
-
-      if(e.target === overlay){
-        closeViewer();
-      }
-
-    }
-  );
-
-
-  largeImage.addEventListener(
-    "click",
-    e => {
-      e.stopPropagation();
-    }
-  );
-
-
-  document.addEventListener(
-    "keydown",
-    e => {
-
-      if(
-        e.key === "Escape" &&
-        viewer.classList.contains("open")
-      ){
-
-        closeViewer();
-
-      }
-
-    }
-  );
-
-
-  window.mangueOpenImage = function(src, alt){
-
-    if(!src) return;
-
-    largeImage.src = src;
-    largeImage.alt = alt || "Producto";
+  window.mangueOpenProduct = function(p) {
+    if (!p) return;
+    
+    viewer.querySelector(".mangue-image-large").src = p.img;
+    viewer.querySelector(".mangue-image-large").alt = p.name;
+    viewer.querySelector(".modal-cat").textContent = p.cat;
+    viewer.querySelector(".modal-title").textContent = p.name;
+    
+    const detalles = [
+      p.talla ? `<b>Talla:</b> ${escapeHtml(p.talla)}` : '',
+      p.color ? `<b>Color:</b> ${escapeHtml(p.color)}` : '',
+      p.genero ? `<b>Género:</b> ${escapeHtml(p.genero)}` : ''
+    ].filter(Boolean).join(' • ');
+    
+    viewer.querySelector(".modal-specs").innerHTML = detalles || 'Sin especificaciones adicionales';
+    
+    viewer.querySelector(".modal-price-box").innerHTML = `
+      <span style="font-size:1.3rem; font-weight:bold; color:#111;">${money(p.price)}</span>
+      ${p.old ? `<span style="text-decoration:line-through; color:#888; margin-left:8px;">${money(p.old)}</span>` : ''}
+    `;
+    
+    viewer.querySelector(".modal-desc").textContent = p.desc || "Sin descripción disponible.";
+    
+    viewer.querySelector(".modal-action").innerHTML = `
+      <button class="add" type="button" style="width:100%; padding:12px; font-size:1rem; cursor:pointer;" onclick="addToCart('${p.id}'); document.querySelector('#mangueImageViewer').classList.remove('open'); document.body.classList.remove('mangue-image-open');" ${p.stock === 0 ? 'disabled' : ''}>
+        ${p.stock > 0 ? '🛒 Añadir al carrito' : 'Agotado'}
+      </button>
+    `;
 
     viewer.classList.add("open");
-
-    document.body.classList.add(
-      "mangue-image-open"
-    );
-
+    document.body.classList.add("mangue-image-open");
   };
-
 }
-
 
 /* =========================
    SEGURIDAD HTML
@@ -907,55 +816,22 @@ $("#heroNext").onclick =
       top:450,
       behavior:"smooth"
     });
-
-
-/* =========================
-   VISOR DE IMÁGENES
-   EVENTO DELEGADO
-========================= */
-
+/* ========================= VISOR DE IMÁGENES EVENTO DELEGADO ========================= */
 createImageViewer();
 
+grid.addEventListener("click", e => {
+  const image = e.target.closest(".product-image");
+  if (!image) return;
+  e.preventDefault();
+  
+  const productId = image.dataset.productImage;
+  const product = products.find(p => String(p.id) === String(productId));
+  if (!product) return;
 
-grid.addEventListener(
-  "click",
-  e => {
-
-    const image =
-      e.target.closest(
-        ".product-image"
-      );
-
-    if(!image) return;
-
-    e.preventDefault();
-
-    const productId =
-      Number(
-        image.dataset.productImage
-      );
-
-    const product =
-      products.find(
-        p => p.id === productId
-      );
-
-    if(!product) return;
-
-    if(
-      typeof window.mangueOpenImage ===
-      "function"
-    ){
-
-      window.mangueOpenImage(
-        product.img,
-        product.name
-      );
-
-    }
-
+  if (typeof window.mangueOpenProduct === "function") {
+    window.mangueOpenProduct(product);
   }
-);
+});
 
 
 /* =========================
