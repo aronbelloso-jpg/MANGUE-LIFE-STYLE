@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <title>Admin | Mangue Life Style</title>
 
   <style>
-    *{box-sizing:border-box}
+    *{
+      box-sizing:border-box;
+    }
 
     body{
       margin:0;
@@ -16,7 +19,7 @@
     }
 
     .wrap{
-      max-width:1100px;
+      max-width:1150px;
       margin:auto;
       padding:20px;
     }
@@ -49,12 +52,15 @@
       font-size:14px;
     }
 
-    input,select,textarea{
+    input,
+    select,
+    textarea{
       width:100%;
       padding:12px;
       border:1px solid #ddd;
       border-radius:9px;
       font:inherit;
+      background:#fff;
     }
 
     textarea{
@@ -68,6 +74,11 @@
       padding:11px 18px;
       font-weight:bold;
       cursor:pointer;
+    }
+
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
     }
 
     .gold{
@@ -99,6 +110,11 @@
 
     .success{
       color:#16803c;
+      font-weight:bold;
+    }
+
+    .warning{
+      color:#9a6700;
       font-weight:bold;
     }
 
@@ -136,11 +152,12 @@
     .variant-title{
       font-weight:bold;
       margin-bottom:12px;
+      font-size:15px;
     }
 
     .variant-grid{
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr;
       gap:12px;
     }
 
@@ -153,17 +170,40 @@
       display:none;
     }
 
+    .category-info{
+      margin-top:8px;
+      padding:10px 12px;
+      border-radius:9px;
+      background:#f8f4e8;
+      color:#66520b;
+      font-size:13px;
+    }
+
+    .variant-summary{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px;
+      background:#f8f8f8;
+      border-radius:10px;
+      margin-top:10px;
+    }
+
     table{
       width:100%;
       border-collapse:collapse;
       margin-top:20px;
     }
 
-    th,td{
+    th,
+    td{
       padding:11px 8px;
       border-bottom:1px solid #eee;
       text-align:left;
       font-size:14px;
+      vertical-align:middle;
     }
 
     .product-img{
@@ -180,7 +220,32 @@
       flex-wrap:wrap;
     }
 
-    @media(max-width:700px){
+    .empty{
+      padding:20px;
+      text-align:center;
+      color:#777;
+    }
+
+    .loading{
+      opacity:.65;
+      pointer-events:none;
+    }
+
+    .small{
+      font-size:12px;
+    }
+
+    .stock-good{
+      color:#16803c;
+      font-weight:bold;
+    }
+
+    .stock-zero{
+      color:#c0392b;
+      font-weight:bold;
+    }
+
+    @media(max-width:800px){
 
       .grid,
       .variant-grid{
@@ -199,6 +264,11 @@
         align-items:flex-start;
         flex-direction:column;
       }
+
+      .option-header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
     }
   </style>
 </head>
@@ -207,24 +277,31 @@
 
 <div class="wrap">
 
+  <!-- CABECERA -->
+
   <div class="box head">
 
     <div>
       <strong>MANGUE LIFE STYLE</strong>
-      <div class="muted">Panel de administración</div>
+
+      <div class="muted">
+        Panel de administración
+      </div>
     </div>
 
     <div>
 
       <button
         class="secondary"
-        onclick="window.location.href='index.html'">
+        id="storeBtn"
+        type="button">
         Ver tienda
       </button>
 
       <button
         class="danger"
-        id="logoutBtn">
+        id="logoutBtn"
+        type="button">
         Salir
       </button>
 
@@ -235,14 +312,19 @@
 
   <!-- LOGIN -->
 
-  <section id="loginBox" class="box">
+  <section
+    id="loginBox"
+    class="box">
 
-    <h2>Acceso administrador</h2>
+    <h2>
+      Acceso administrador
+    </h2>
 
     <form id="loginForm">
 
       <label>
         Correo electrónico
+
         <input
           id="email"
           type="email"
@@ -254,6 +336,7 @@
 
       <label>
         Contraseña
+
         <input
           id="password"
           type="password"
@@ -271,30 +354,39 @@
 
     </form>
 
-    <p id="loginMessage" class="muted"></p>
+    <p
+      id="loginMessage"
+      class="muted">
+    </p>
 
   </section>
 
 
-  <!-- APP -->
+  <!-- APLICACIÓN -->
 
-  <section id="appBox" class="box hide">
+  <section
+    id="appBox"
+    class="box hide">
 
     <div class="head">
 
       <div>
 
-        <h2>Productos</h2>
+        <h2>
+          Productos
+        </h2>
 
         <p class="muted">
-          Administra productos, opciones, variantes, precios y stock.
+          Administra productos, opciones, variantes,
+          precios y stock.
         </p>
 
       </div>
 
       <button
         id="newProductBtn"
-        class="gold">
+        class="gold"
+        type="button">
         + Nuevo producto
       </button>
 
@@ -303,11 +395,14 @@
 
     <!-- FORMULARIO -->
 
-    <div id="formBox" class="box hide">
+    <div
+      id="formBox"
+      class="box hide">
 
       <h3 id="formTitle">
         Nuevo producto
       </h3>
+
 
       <form id="productForm">
 
@@ -315,11 +410,16 @@
 
           <label>
             Nombre
-            <input id="name" required>
+
+            <input
+              id="name"
+              required>
           </label>
+
 
           <label>
             Precio FCFA
+
             <input
               id="price"
               type="number"
@@ -327,7 +427,9 @@
               required>
           </label>
 
+
           <label>
+
             Categoría
 
             <select id="category">
@@ -340,6 +442,14 @@
                 Ropa
               </option>
 
+              <option value="Ropa de Gala">
+                Ropa de Gala
+              </option>
+
+              <option value="Ropa Casual">
+                Ropa Casual
+              </option>
+
               <option value="Pelucas">
                 Pelucas
               </option>
@@ -348,16 +458,27 @@
                 Zapatos
               </option>
 
+              <option value="Bolsos y accesorios">
+                Bolsos y accesorios
+              </option>
+
               <option value="Cosméticos">
                 Cosméticos
               </option>
 
             </select>
 
+            <div
+              id="categoryInfo"
+              class="category-info">
+            </div>
+
           </label>
+
 
           <label>
             Stock general
+
             <input
               id="stock"
               type="number"
@@ -365,7 +486,9 @@
               value="0">
           </label>
 
+
           <label>
+
             Oferta
 
             <select id="offer">
@@ -382,8 +505,10 @@
 
           </label>
 
+
           <label>
-            Fotografía
+
+            Fotografía principal
 
             <input
               id="imageFile"
@@ -402,20 +527,23 @@
 
           Descripción
 
-          <textarea id="description"></textarea>
+          <textarea
+            id="description"
+            placeholder="Descripción del producto...">
+          </textarea>
 
         </label>
 
 
         <img
           id="preview"
-          class="preview">
+          class="preview"
+          alt="Vista previa">
 
 
         <!-- OPCIONES -->
 
-        <div
-          class="option-box">
+        <div class="option-box">
 
           <div class="option-header">
 
@@ -431,6 +559,7 @@
 
             </div>
 
+
             <button
               type="button"
               class="secondary"
@@ -442,15 +571,17 @@
 
           </div>
 
-          <div id="optionsContainer"></div>
+
+          <div
+            id="optionsContainer">
+          </div>
 
         </div>
 
 
         <!-- VARIANTES -->
 
-        <div
-          class="option-box">
+        <div class="option-box">
 
           <div class="option-header">
 
@@ -461,14 +592,24 @@
               </strong>
 
               <div class="muted">
-                Precio y stock para cada combinación.
+                Cada combinación tendrá su propio
+                SKU, precio y stock.
               </div>
 
             </div>
 
           </div>
 
-          <div id="variantsContainer"></div>
+
+          <div
+            id="variantsSummary"
+            class="variant-summary hide">
+          </div>
+
+
+          <div
+            id="variantsContainer">
+          </div>
 
         </div>
 
@@ -478,7 +619,8 @@
 
         <button
           class="gold"
-          type="submit">
+          type="submit"
+          id="saveProductBtn">
 
           Guardar producto
 
@@ -495,14 +637,16 @@
         </button>
 
 
-        <p id="formMessage"></p>
+        <p
+          id="formMessage">
+        </p>
 
       </form>
 
     </div>
 
 
-    <!-- PRODUCTOS -->
+    <!-- LISTA DE PRODUCTOS -->
 
     <div style="overflow-x:auto">
 
@@ -522,7 +666,9 @@
 
         </thead>
 
-        <tbody id="productsBody"></tbody>
+        <tbody
+          id="productsBody">
+        </tbody>
 
       </table>
 
@@ -540,13 +686,15 @@ import {
 } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 
+/* =========================================================
+   SUPABASE
+========================================================= */
+
 const SUPABASE_URL =
   "https://ebhqsmxrrbcekfyiqhmo.supabase.co";
 
-
 const SUPABASE_KEY =
   "sb_publishable_N4xC25_5dW0O4LCKHERCDA_fBFNNfnZ";
-
 
 const supabase =
   createClient(
@@ -555,61 +703,71 @@ const supabase =
   );
 
 
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
 const loginBox =
   document.getElementById("loginBox");
-
 
 const appBox =
   document.getElementById("appBox");
 
-
 const loginForm =
   document.getElementById("loginForm");
-
 
 const loginMessage =
   document.getElementById("loginMessage");
 
-
 const productForm =
   document.getElementById("productForm");
-
 
 const formBox =
   document.getElementById("formBox");
 
-
 const formTitle =
   document.getElementById("formTitle");
-
 
 const formMessage =
   document.getElementById("formMessage");
 
-
 const productsBody =
   document.getElementById("productsBody");
-
 
 const preview =
   document.getElementById("preview");
 
-
 const imageFile =
   document.getElementById("imageFile");
-
 
 const category =
   document.getElementById("category");
 
+const categoryInfo =
+  document.getElementById("categoryInfo");
 
 const optionsContainer =
   document.getElementById("optionsContainer");
 
-
 const variantsContainer =
   document.getElementById("variantsContainer");
 
+const variantsSummary =
+  document.getElementById("variantsSummary");
+
+const priceInput =
+  document.getElementById("price");
+
+const stockInput =
+  document.getElementById("stock");
+
+const saveProductBtn =
+  document.getElementById("saveProductBtn");
+
+
+/* =========================================================
+   ESTADO
+========================================================= */
 
 let editingId = null;
 
@@ -617,12 +775,124 @@ let editingImage = null;
 
 let options = [];
 
+let loadedVariantData = [];
+
+
+/* =========================================================
+   CATEGORÍAS Y OPCIONES PREDEFINIDAS
+========================================================= */
+
+const categoryOptions = {
+
+  "Perfumes":[
+    "ML",
+    "Tipo",
+    "Intensidad"
+  ],
+
+  "Ropa":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Ropa de Gala":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Ropa Casual":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Pelucas":[
+    "Color",
+    "Talla",
+    "Modelo",
+    "Largo",
+    "Tipo"
+  ],
+
+  "Zapatos":[
+    "Talla",
+    "Color",
+    "Modelo"
+  ],
+
+  "Bolsos y accesorios":[
+    "Tipo",
+    "Color",
+    "Modelo",
+    "Tamaño",
+    "Material"
+  ],
+
+  "Cosméticos":[
+    "Tono",
+    "Tamaño",
+    "Presentación"
+  ]
+
+};
+
+
+/* =========================================================
+   DESCRIPCIÓN DE CATEGORÍAS
+========================================================= */
+
+const categoryDescriptions = {
+
+  "Perfumes":
+    "Variantes recomendadas: ML, Tipo e Intensidad.",
+
+  "Ropa":
+    "Variantes recomendadas: Talla, Color y Modelo.",
+
+  "Ropa de Gala":
+    "Variantes recomendadas: Talla, Color y Modelo.",
+
+  "Ropa Casual":
+    "Variantes recomendadas: Talla, Color y Modelo.",
+
+  "Pelucas":
+    "Variantes recomendadas: Color, Talla, Modelo, Largo y Tipo.",
+
+  "Zapatos":
+    "Variantes recomendadas: Talla, Color y Modelo.",
+
+  "Bolsos y accesorios":
+    "Variantes recomendadas: Tipo, Color, Modelo, Tamaño y Material.",
+
+  "Cosméticos":
+    "Variantes recomendadas: Tono, Tamaño y Presentación."
+
+};
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
 
 function money(value){
 
   return new Intl.NumberFormat("es-GQ")
     .format(Number(value || 0))
     + " FCFA";
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
@@ -659,77 +929,62 @@ function showFormMessage(
 }
 
 
-function escapeHtml(value){
+function makeId(){
 
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  if(
+    window.crypto &&
+    typeof window.crypto.randomUUID === "function"
+  ){
+
+    return window.crypto.randomUUID();
+
+  }
+
+  return (
+    Date.now().toString(36)
+    +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
 
 }
 
 
-/*
-  OPCIONES PREDEFINIDAS
-*/
+/* =========================================================
+   CATEGORÍA
+========================================================= */
 
-const categoryOptions = {
+function updateCategoryInfo(){
 
-  "Perfumes":[
-    "ML",
-    "Tipo",
-    "Intensidad"
-  ],
+  categoryInfo.textContent =
+    categoryDescriptions[
+      category.value
+    ] || "";
 
-  "Ropa":[
-    "Talla",
-    "Color",
-    "Modelo"
-  ],
-
-  "Pelucas":[
-    "Color",
-    "Talla",
-    "Modelo",
-    "Largo",
-    "Tipo"
-  ],
-
-  "Zapatos":[
-    "Talla",
-    "Color",
-    "Modelo"
-  ],
-
-  "Cosméticos":[
-    "Tono",
-    "Tamaño",
-    "Presentación"
-  ]
-
-};
+}
 
 
-/*
-  CREAR OPCIÓN
-*/
+function loadDefaultCategoryOptions(){
 
-function addOption(
-  name=""
-){
+  const names =
+    categoryOptions[
+      category.value
+    ] || [];
 
-  const id =
-    crypto.randomUUID();
 
-  options.push({
+  options = names.map(
+    name=>({
 
-    id,
-    name,
-    values:[]
+      id:makeId(),
 
-  });
+      name,
+
+      values:[]
+
+    })
+  );
+
 
   renderOptions();
 
@@ -738,13 +993,52 @@ function addOption(
 }
 
 
-/*
-  MOSTRAR OPCIONES
-*/
+/* =========================================================
+   OPCIONES
+========================================================= */
+
+function addOption(
+  name=""
+){
+
+  options.push({
+
+    id:makeId(),
+
+    name,
+
+    values:[]
+
+  });
+
+
+  renderOptions();
+
+  renderVariants();
+
+}
+
 
 function renderOptions(){
 
   optionsContainer.innerHTML = "";
+
+
+  if(!options.length){
+
+    optionsContainer.innerHTML = `
+
+      <p class="muted">
+        No hay opciones.
+        Pulsa "Añadir opción" para crear una.
+      </p>
+
+    `;
+
+    return;
+
+  }
+
 
   options.forEach(
     option=>{
@@ -778,7 +1072,9 @@ function renderOptions(){
 
         </div>
 
+
         <div class="values-container"></div>
+
 
         <button
           type="button"
@@ -826,9 +1122,7 @@ function renderOptions(){
 
 
           row
-            .querySelector(
-              ".option-value"
-            )
+            .querySelector(".option-value")
             .addEventListener(
               "input",
               event=>{
@@ -843,9 +1137,7 @@ function renderOptions(){
 
 
           row
-            .querySelector(
-              ".remove-value"
-            )
+            .querySelector(".remove-value")
             .addEventListener(
               "click",
               ()=>{
@@ -872,9 +1164,7 @@ function renderOptions(){
 
 
       box
-        .querySelector(
-          ".option-name"
-        )
+        .querySelector(".option-name")
         .addEventListener(
           "input",
           event=>{
@@ -889,16 +1179,15 @@ function renderOptions(){
 
 
       box
-        .querySelector(
-          ".remove-option"
-        )
+        .querySelector(".remove-option")
         .addEventListener(
           "click",
           ()=>{
 
             options =
               options.filter(
-                item=>item.id !== option.id
+                item =>
+                  item.id !== option.id
               );
 
             renderOptions();
@@ -910,9 +1199,7 @@ function renderOptions(){
 
 
       box
-        .querySelector(
-          ".add-value"
-        )
+        .querySelector(".add-value")
         .addEventListener(
           "click",
           ()=>{
@@ -937,35 +1224,47 @@ function renderOptions(){
 }
 
 
-/*
-  VARIANTES
-*/
+/* =========================================================
+   COMBINACIONES
+========================================================= */
 
-function renderVariants(){
+function getValidOptions(){
 
-  variantsContainer.innerHTML = "";
+  return options
+    .map(
+      option=>({
 
+        ...option,
 
-  const validOptions =
-    options.filter(
+        values:
+          option.values
+            .map(
+              value =>
+                String(value || "").trim()
+            )
+            .filter(Boolean)
+
+      })
+    )
+    .filter(
       option =>
         option.name.trim()
         &&
-        option.values.some(
-          value =>
-            value.trim()
-        )
+        option.values.length
     );
+
+}
+
+
+function generateCombinations(){
+
+  const validOptions =
+    getValidOptions();
 
 
   if(!validOptions.length){
 
-    variantsContainer.innerHTML =
-      `<p class="muted">
-        Añade opciones y valores para crear variantes.
-      </p>`;
-
-    return;
+    return [];
 
   }
 
@@ -977,28 +1276,20 @@ function renderVariants(){
   validOptions.forEach(
     option=>{
 
-      const values =
-        option.values
-          .filter(
-            value =>
-              value.trim()
-          );
-
-
       const next = [];
 
 
       combinations.forEach(
         combination=>{
 
-          values.forEach(
+          option.values.forEach(
             value=>{
 
               next.push({
 
                 ...combination,
 
-                [option.name]:
+                [option.name.trim()]:
                   value
 
               });
@@ -1015,6 +1306,97 @@ function renderVariants(){
 
     }
   );
+
+
+  return combinations;
+
+}
+
+
+/* =========================================================
+   VARIANTES
+========================================================= */
+
+function findLoadedVariant(
+  combination
+){
+
+  return loadedVariantData.find(
+    variant=>{
+
+      const saved =
+        variant.combination || {};
+
+      const keys =
+        Object.keys(combination);
+
+      if(
+        Object.keys(saved).length
+        !==
+        keys.length
+      ){
+
+        return false;
+
+      }
+
+
+      return keys.every(
+        key =>
+          String(saved[key] ?? "")
+          ===
+          String(combination[key] ?? "")
+      );
+
+    }
+  );
+
+}
+
+
+function renderVariants(){
+
+  variantsContainer.innerHTML = "";
+
+  variantsSummary.classList.add("hide");
+
+
+  const combinations =
+    generateCombinations();
+
+
+  if(!combinations.length){
+
+    variantsContainer.innerHTML = `
+
+      <p class="muted">
+        Añade valores a las opciones para generar
+        automáticamente las combinaciones.
+      </p>
+
+    `;
+
+    return;
+
+  }
+
+
+  variantsSummary.classList.remove("hide");
+
+
+  variantsSummary.innerHTML = `
+
+    <strong>
+      ${combinations.length}
+      variante${combinations.length === 1 ? "" : "s"}
+      generada${combinations.length === 1 ? "" : "s"}
+    </strong>
+
+    <span class="muted">
+      Cada variante tendrá su propio precio y stock.
+    </span>
+
+  `;
 
 
   combinations.forEach(
@@ -1036,35 +1418,111 @@ function renderVariants(){
           .join(" · ");
 
 
+      const saved =
+        findLoadedVariant(
+          combination
+        );
+
+
+      const savedPrice =
+        saved
+          ? saved.price
+          : Number(
+              priceInput.value || 0
+            );
+
+
+      const savedStock =
+        saved
+          ? saved.stock
+          : 0;
+
+
+      const savedSku =
+        saved
+          ? saved.sku
+          : "";
+
+
+      const savedImage =
+        saved
+          ? saved.image_url
+          : "";
+
+
       variant.innerHTML = `
 
         <div class="variant-title">
           ${title}
         </div>
 
+
         <div class="variant-grid">
 
           <label>
+
+            SKU
+
+            <input
+              type="text"
+              class="variant-sku"
+              placeholder="SKU opcional"
+              value="${escapeHtml(savedSku)}">
+
+          </label>
+
+
+          <label>
+
             Precio FCFA
+
             <input
               type="number"
               min="0"
               class="variant-price"
-              value="${document.getElementById("price").value || 0}">
+              value="${Number(savedPrice || 0)}">
+
           </label>
 
+
           <label>
+
             Stock
+
             <input
               type="number"
               min="0"
               class="variant-stock"
-              value="0">
+              value="${Number(savedStock || 0)}">
+
           </label>
 
         </div>
 
+
+        <br>
+
+
+        <label>
+
+          URL de imagen de esta variante
+          <span class="small muted">
+            Opcional. La fotografía principal se mantiene si se deja vacío.
+          </span>
+
+          <input
+            type="url"
+            class="variant-image"
+            placeholder="https://..."
+            value="${escapeHtml(savedImage || "")}">
+
+        </label>
+
       `;
+
+
+      variant.dataset.index =
+        String(index);
 
 
       variantsContainer.appendChild(
@@ -1077,52 +1535,166 @@ function renderVariants(){
 }
 
 
-/*
-  CATEGORÍA
-*/
+/* =========================================================
+   LEER VARIANTES DEL FORMULARIO
+========================================================= */
+
+function collectFormVariants(){
+
+  const combinations =
+    generateCombinations();
+
+
+  return combinations.map(
+    (combination,index)=>{
+
+      const element =
+        variantsContainer
+          .querySelector(
+            `.variant[data-index="${index}"]`
+          );
+
+
+      return {
+
+        combination,
+
+        sku:
+          element
+            ?.querySelector(".variant-sku")
+            ?.value
+            .trim()
+            || null,
+
+        price:
+          Number(
+            element
+              ?.querySelector(".variant-price")
+              ?.value
+              || 0
+          ),
+
+        stock:
+          Number(
+            element
+              ?.querySelector(".variant-stock")
+              ?.value
+              || 0
+          ),
+
+        image_url:
+          element
+            ?.querySelector(".variant-image")
+            ?.value
+            .trim()
+            || null
+
+      };
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CATEGORÍA CAMBIADA
+========================================================= */
 
 category.addEventListener(
   "change",
   ()=>{
 
+    updateCategoryInfo();
+
+
     if(
-      !confirm(
-        "¿Quieres cargar las opciones recomendadas para esta categoría?"
-      )
+      editingId
     ){
 
-      return;
+      const answer =
+        confirm(
+          "Has cambiado la categoría. ¿Quieres reemplazar las opciones actuales por las opciones recomendadas de esta categoría?"
+        );
+
+
+      if(!answer){
+
+        return;
+
+      }
 
     }
 
 
-    options = [];
+    loadedVariantData = [];
 
-
-    const defaults =
-      categoryOptions[
-        category.value
-      ] || [];
-
-
-    defaults.forEach(
-      name=>{
-        addOption(name);
-      }
-    );
-
-
-    renderOptions();
-
-    renderVariants();
+    loadDefaultCategoryOptions();
 
   }
 );
 
 
-/*
-  AÑADIR OPCIÓN
-*/
+/* =========================================================
+   PRECIO GENERAL
+========================================================= */
+
+priceInput.addEventListener(
+  "input",
+  ()=>{
+
+    const inputs =
+      variantsContainer
+        .querySelectorAll(
+          ".variant-price"
+        );
+
+
+    inputs.forEach(
+      input=>{
+
+        if(
+          !input.dataset.userEdited
+        ){
+
+          input.value =
+            priceInput.value || 0;
+
+        }
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================================================
+   MARCAR PRECIO MODIFICADO
+========================================================= */
+
+variantsContainer.addEventListener(
+  "input",
+  event=>{
+
+    if(
+      event.target.matches(
+        ".variant-price"
+      )
+    ){
+
+      event.target.dataset.userEdited =
+        "true";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   AÑADIR OPCIÓN MANUAL
+========================================================= */
 
 document
   .getElementById("addOptionBtn")
@@ -1136,15 +1708,16 @@ document
   );
 
 
-/*
-  LOGIN
-*/
+/* =========================================================
+   LOGIN
+========================================================= */
 
 loginForm.addEventListener(
   "submit",
   async event=>{
 
     event.preventDefault();
+
 
     showLoginMessage(
       "Comprobando acceso..."
@@ -1171,6 +1744,7 @@ loginForm.addEventListener(
         .signInWithPassword({
 
           email,
+
           password
 
         });
@@ -1180,11 +1754,14 @@ loginForm.addEventListener(
 
       console.error(error);
 
+
       showLoginMessage(
         "No se pudo iniciar sesión: "
-        + error.message,
+        +
+        error.message,
         true
       );
+
 
       return;
 
@@ -1197,17 +1774,27 @@ loginForm.addEventListener(
 );
 
 
-/*
-  SESIÓN
-*/
+/* =========================================================
+   SESIÓN
+========================================================= */
 
 async function checkSession(){
 
   const {
-    data
+    data,
+    error
   } =
     await supabase.auth
       .getSession();
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
 
 
   if(data.session){
@@ -1220,6 +1807,9 @@ async function checkSession(){
     appBox
       .classList
       .remove("hide");
+
+
+    updateCategoryInfo();
 
 
     await loadProducts();
@@ -1240,14 +1830,21 @@ async function checkSession(){
 }
 
 
-/*
-  PRODUCTOS
-*/
+/* =========================================================
+   CARGAR PRODUCTOS
+========================================================= */
 
 async function loadProducts(){
 
-  productsBody.innerHTML =
-    "<tr><td colspan='5'>Cargando productos...</td></tr>";
+  productsBody.innerHTML = `
+
+    <tr>
+      <td colspan="5">
+        Cargando productos...
+      </td>
+    </tr>
+
+  `;
 
 
   const {
@@ -1257,25 +1854,49 @@ async function loadProducts(){
     await supabase
       .from("products")
       .select("*")
-      .order("id",{ascending:true});
+      .order(
+        "id",
+        {ascending:true}
+      );
 
 
   if(error){
 
     console.error(error);
 
-    productsBody.innerHTML =
-      "<tr><td colspan='5'>Error cargando productos.</td></tr>";
+
+    productsBody.innerHTML = `
+
+      <tr>
+        <td colspan="5">
+          Error cargando productos.
+        </td>
+      </tr>
+
+    `;
+
 
     return;
 
   }
 
 
-  if(!data.length){
+  if(!data || !data.length){
 
-    productsBody.innerHTML =
-      "<tr><td colspan='5'>No hay productos todavía.</td></tr>";
+    productsBody.innerHTML = `
+
+      <tr>
+        <td
+          colspan="5"
+          class="empty">
+
+          No hay productos todavía.
+
+        </td>
+      </tr>
+
+    `;
+
 
     return;
 
@@ -1289,13 +1910,33 @@ async function loadProducts(){
         const image =
           product.image_url
 
-            ? `<img
-                class="product-img"
-                src="${escapeHtml(product.image_url)}">`
+            ? `
 
-            : `<div
-                class="product-img">
-              </div>`;
+              <img
+                class="product-img"
+                src="${escapeHtml(product.image_url)}"
+                alt="${escapeHtml(product.name)}">
+
+            `
+
+            : `
+
+              <div class="product-img">
+              </div>
+
+            `;
+
+
+        const stock =
+          Number(
+            product.stock || 0
+          );
+
+
+        const stockClass =
+          stock > 0
+            ? "stock-good"
+            : "stock-zero";
 
 
         return `
@@ -1305,6 +1946,7 @@ async function loadProducts(){
             <td>
               ${image}
             </td>
+
 
             <td>
 
@@ -1320,13 +1962,20 @@ async function loadProducts(){
 
             </td>
 
+
             <td>
               ${money(product.price)}
             </td>
 
+
             <td>
-              ${product.stock ?? 0}
+
+              <span class="${stockClass}">
+                ${stock}
+              </span>
+
             </td>
+
 
             <td>
 
@@ -1334,15 +1983,18 @@ async function loadProducts(){
 
                 <button
                   class="gold"
-                  data-edit="${product.id}">
+                  data-edit="${product.id}"
+                  type="button">
 
                   Editar
 
                 </button>
 
+
                 <button
                   class="danger"
-                  data-delete="${product.id}">
+                  data-delete="${product.id}"
+                  type="button">
 
                   Eliminar
 
@@ -1368,11 +2020,11 @@ async function loadProducts(){
         button.addEventListener(
           "click",
           ()=>{
+
             editProduct(
-              Number(
-                button.dataset.edit
-              )
+              button.dataset.edit
             );
+
           }
         );
 
@@ -1388,11 +2040,11 @@ async function loadProducts(){
         button.addEventListener(
           "click",
           ()=>{
+
             deleteProduct(
-              Number(
-                button.dataset.delete
-              )
+              button.dataset.delete
             );
+
           }
         );
 
@@ -1402,9 +2054,9 @@ async function loadProducts(){
 }
 
 
-/*
-  NUEVO PRODUCTO
-*/
+/* =========================================================
+   NUEVO PRODUCTO
+========================================================= */
 
 document
   .getElementById("newProductBtn")
@@ -1416,24 +2068,19 @@ document
 
       editingImage = null;
 
-      options = [];
+      loadedVariantData = [];
 
+      productForm.reset();
 
       formTitle.textContent =
         "Nuevo producto";
 
 
-      productForm.reset();
+      category.value =
+        "Perfumes";
 
 
-      optionsContainer.innerHTML =
-        "";
-
-
-      variantsContainer.innerHTML =
-        `<p class="muted">
-          Añade opciones y valores para crear variantes.
-        </p>`;
+      updateCategoryInfo();
 
 
       preview.style.display =
@@ -1447,15 +2094,28 @@ document
 
       showFormMessage("");
 
+
+      loadDefaultCategoryOptions();
+
+      window.scrollTo({
+        top:formBox.offsetTop - 10,
+        behavior:"smooth"
+      });
+
     }
   );
 
 
-/*
-  EDITAR PRODUCTO
-*/
+/* =========================================================
+   EDITAR PRODUCTO
+========================================================= */
 
 async function editProduct(id){
+
+  showFormMessage(
+    "Cargando producto..."
+  );
+
 
   const {
     data,
@@ -1464,22 +2124,32 @@ async function editProduct(id){
     await supabase
       .from("products")
       .select("*")
-      .eq("id",id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
   if(error){
 
+    console.error(error);
+
+
     alert(
-      "No se pudo cargar el producto."
+      "No se pudo cargar el producto: "
+      +
+      error.message
     );
+
 
     return;
 
   }
 
 
-  editingId = id;
+  editingId =
+    data.id;
 
   editingImage =
     data.image_url || null;
@@ -1489,28 +2159,43 @@ async function editProduct(id){
     "Editar producto";
 
 
-  document.getElementById("name").value =
-    data.name || "";
+  document
+    .getElementById("name")
+    .value =
+      data.name || "";
 
 
-  document.getElementById("price").value =
-    data.price || 0;
+  document
+    .getElementById("price")
+    .value =
+      data.price || 0;
 
 
-  document.getElementById("category").value =
+  category.value =
     data.category || "Perfumes";
 
 
-  document.getElementById("stock").value =
-    data.stock || 0;
+  document
+    .getElementById("stock")
+    .value =
+      data.stock || 0;
 
 
-  document.getElementById("offer").value =
-    String(Boolean(data.offer));
+  document
+    .getElementById("offer")
+    .value =
+      String(
+        Boolean(data.offer)
+      );
 
 
-  document.getElementById("description").value =
-    data.description || "";
+  document
+    .getElementById("description")
+    .value =
+      data.description || "";
+
+
+  imageFile.value = "";
 
 
   if(data.image_url){
@@ -1529,24 +2214,52 @@ async function editProduct(id){
   }
 
 
+  updateCategoryInfo();
+
+
   options = [];
 
+  loadedVariantData = [];
 
-  await loadExistingOptions(id);
+
+  await loadExistingOptions(
+    id
+  );
+
+
+  await loadExistingVariants(
+    id
+  );
+
+
+  renderOptions();
+
+  renderVariants();
 
 
   formBox
     .classList
     .remove("hide");
 
+
+  showFormMessage("");
+
+
+  window.scrollTo({
+    top:formBox.offsetTop - 10,
+    behavior:"smooth"
+  });
+
 }
 
 
-/*
-  CARGAR OPCIONES EXISTENTES
-*/
+/* =========================================================
+   CARGAR OPCIONES EXISTENTES
+========================================================= */
 
-async function loadExistingOptions(productId){
+async function loadExistingOptions(
+  productId
+){
 
   const {
     data,
@@ -1576,7 +2289,11 @@ async function loadExistingOptions(productId){
 
   if(error){
 
-    console.error(error);
+    console.error(
+      "Error cargando opciones:",
+      error
+    );
+
 
     return;
 
@@ -1584,42 +2301,309 @@ async function loadExistingOptions(productId){
 
 
   options =
-    (data || []).map(
-      option=>({
+    (data || [])
+      .sort(
+        (a,b)=>
+          Number(a.sort_order || 0)
+          -
+          Number(b.sort_order || 0)
+      )
+      .map(
+        option=>({
 
-        id:
-          String(option.id),
+          id:
+            String(option.id),
 
-        name:
-          option.name,
+          name:
+            option.name || "",
 
-        values:
-          (option.product_option_values || [])
-            .sort(
-              (a,b) =>
-                a.sort_order
-                -
-                b.sort_order
-            )
-            .map(
-              value =>
-                value.value
-            )
+          values:
+            (option.product_option_values || [])
+              .sort(
+                (a,b)=>
+                  Number(a.sort_order || 0)
+                  -
+                  Number(b.sort_order || 0)
+              )
+              .map(
+                value =>
+                  value.value || ""
+              )
 
-      })
-    );
-
-
-  renderOptions();
-
-  renderVariants();
+        })
+      );
 
 }
 
 
-/*
-  SUBIR FOTO
-*/
+/* =========================================================
+   CARGAR VARIANTES EXISTENTES
+========================================================= */
+
+async function loadExistingVariants(
+  productId
+){
+
+  loadedVariantData = [];
+
+
+  const {
+    data:variantRows,
+    error:variantError
+  } =
+    await supabase
+      .from("product_variants")
+      .select(`
+        id,
+        product_id,
+        sku,
+        price,
+        stock,
+        image_url,
+        active,
+        created_at
+      `)
+      .eq(
+        "product_id",
+        productId
+      );
+
+
+  if(variantError){
+
+    console.error(
+      "Error cargando variantes:",
+      variantError
+    );
+
+
+    return;
+
+  }
+
+
+  if(
+    !variantRows
+    ||
+    !variantRows.length
+  ){
+
+    return;
+
+  }
+
+
+  const variantIds =
+    variantRows.map(
+      variant =>
+        variant.id
+    );
+
+
+  const {
+    data:links,
+    error:linkError
+  } =
+    await supabase
+      .from("product_variant_option_values")
+      .select(`
+        variant_id,
+        option_value_id
+      `)
+      .in(
+        "variant_id",
+        variantIds
+      );
+
+
+  if(linkError){
+
+    console.error(
+      "Error cargando relaciones de variantes:",
+      linkError
+    );
+
+
+    return;
+
+  }
+
+
+  const optionValueIds =
+    [
+      ...new Set(
+        (links || []).map(
+          row =>
+            row.option_value_id
+        )
+      )
+    ];
+
+
+  let optionValueRows = [];
+
+
+  if(optionValueIds.length){
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from("product_option_values")
+        .select(`
+          id,
+          option_id,
+          value
+        `)
+        .in(
+          "id",
+          optionValueIds
+        );
+
+
+    if(error){
+
+      console.error(
+        "Error cargando valores de opciones:",
+        error
+      );
+
+
+      return;
+
+    }
+
+
+    optionValueRows =
+      data || [];
+
+  }
+
+
+  const optionValueMap =
+    new Map();
+
+
+  optionValueRows.forEach(
+    row=>{
+
+      optionValueMap.set(
+        String(row.id),
+        row
+      );
+
+    }
+  );
+
+
+  const optionMap =
+    new Map();
+
+
+  options.forEach(
+    option=>{
+
+      optionMap.set(
+        String(option.id),
+        option.name
+      );
+
+    }
+  );
+
+
+  loadedVariantData =
+    variantRows.map(
+      variant=>{
+
+        const variantLinks =
+          (links || [])
+            .filter(
+              link =>
+                String(link.variant_id)
+                ===
+                String(variant.id)
+            );
+
+
+        const combination = {};
+
+
+        variantLinks.forEach(
+          link=>{
+
+            const value =
+              optionValueMap.get(
+                String(
+                  link.option_value_id
+                )
+              );
+
+
+            if(!value){
+
+              return;
+
+            }
+
+
+            const optionName =
+              optionMap.get(
+                String(value.option_id)
+              );
+
+
+            if(optionName){
+
+              combination[
+                optionName
+              ] =
+                value.value;
+
+            }
+
+          }
+        );
+
+
+        return {
+
+          id:
+            variant.id,
+
+          sku:
+            variant.sku || "",
+
+          price:
+            Number(
+              variant.price || 0
+            ),
+
+          stock:
+            Number(
+              variant.stock || 0
+            ),
+
+          image_url:
+            variant.image_url || "",
+
+          active:
+            variant.active !== false,
+
+          combination
+
+        };
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   SUBIR FOTO PRINCIPAL
+========================================================= */
 
 async function uploadImage(file){
 
@@ -1638,7 +2622,7 @@ async function uploadImage(file){
 
 
   const fileName =
-    `${crypto.randomUUID()}.${extension}`;
+    `${makeId()}.${extension}`;
 
 
   const filePath =
@@ -1681,33 +2665,20 @@ async function uploadImage(file){
 }
 
 
-/*
-  GUARDAR OPCIONES
-*/
+/* =========================================================
+   GUARDAR OPCIONES
+========================================================= */
 
 async function saveOptions(
   productId
 ){
 
-  await supabase
-    .from("product_options")
-    .delete()
-    .eq(
-      "product_id",
-      productId
-    );
-
-
   const validOptions =
-    options.filter(
-      option =>
-        option.name.trim()
-        &&
-        option.values.some(
-          value =>
-            value.trim()
-        )
-    );
+    getValidOptions();
+
+
+  const optionValueMap =
+    new Map();
 
 
   for(
@@ -1738,7 +2709,9 @@ async function saveOptions(
             i
 
         })
-        .select()
+        .select(
+          "id"
+        )
         .single();
 
 
@@ -1750,46 +2723,149 @@ async function saveOptions(
 
 
     const values =
-      option.values
-        .filter(
-          value =>
-            value.trim()
+      option.values;
+
+
+    if(!values.length){
+
+      continue;
+
+    }
+
+
+    const rows =
+      values.map(
+        (value,index)=>({
+
+          option_id:
+            data.id,
+
+          value:
+            value.trim(),
+
+          sort_order:
+            index
+
+        })
+      );
+
+
+    const {
+      data:valueRows,
+      error:valueError
+    } =
+      await supabase
+        .from("product_option_values")
+        .insert(rows)
+        .select(
+          "id,option_id,value"
         );
 
 
-    if(values.length){
+    if(valueError){
 
-      const rows =
-        values.map(
-          (value,index)=>({
+      throw valueError;
 
-            option_id:
-              data.id,
+    }
 
-            value:
-              value.trim(),
 
-            sort_order:
-              index
+    (valueRows || [])
+      .forEach(
+        row=>{
 
-          })
+          optionValueMap.set(
+
+            `${option.name.trim()}|||${String(row.value).trim()}`,
+
+            row.id
+
+          );
+
+        }
+      );
+
+  }
+
+
+  return optionValueMap;
+
+}
+
+
+/* =========================================================
+   BORRAR VARIANTES DE UN PRODUCTO
+========================================================= */
+
+async function deleteExistingVariants(
+  productId
+){
+
+  const {
+    data:oldVariants,
+    error:loadError
+  } =
+    await supabase
+      .from("product_variants")
+      .select("id")
+      .eq(
+        "product_id",
+        productId
+      );
+
+
+  if(loadError){
+
+    throw loadError;
+
+  }
+
+
+  const ids =
+    (oldVariants || [])
+      .map(
+        row =>
+          row.id
+      );
+
+
+  if(ids.length){
+
+    const {
+      error:linkError
+    } =
+      await supabase
+        .from(
+          "product_variant_option_values"
+        )
+        .delete()
+        .in(
+          "variant_id",
+          ids
         );
 
 
-      const {
-        error:
-          valuesError
-      } =
-        await supabase
-          .from("product_option_values")
-          .insert(rows);
+    if(linkError){
+
+      throw linkError;
+
+    }
 
 
-      if(valuesError){
+    const {
+      error:variantError
+    } =
+      await supabase
+        .from("product_variants")
+        .delete()
+        .in(
+          "id",
+          ids
+        );
 
-        throw valuesError;
 
-      }
+    if(variantError){
+
+      throw variantError;
 
     }
 
@@ -1798,9 +2874,175 @@ async function saveOptions(
 }
 
 
-/*
-  GUARDAR PRODUCTO
-*/
+/* =========================================================
+   BORRAR OPCIONES DE UN PRODUCTO
+========================================================= */
+
+async function deleteExistingOptions(
+  productId
+){
+
+  const {
+    error
+  } =
+    await supabase
+      .from("product_options")
+      .delete()
+      .eq(
+        "product_id",
+        productId
+      );
+
+
+  if(error){
+
+    throw error;
+
+  }
+
+}
+
+
+/* =========================================================
+   GUARDAR VARIANTES
+========================================================= */
+
+async function saveVariants(
+  productId,
+  variantData,
+  optionValueMap
+){
+
+  if(!variantData.length){
+
+    return;
+
+  }
+
+
+  const variantRows =
+    variantData.map(
+      variant=>({
+
+        product_id:
+          productId,
+
+        sku:
+          variant.sku || null,
+
+        price:
+          Number(
+            variant.price || 0
+          ),
+
+        stock:
+          Number(
+            variant.stock || 0
+          ),
+
+        image_url:
+          variant.image_url || null,
+
+        active:
+          true
+
+      })
+    );
+
+
+  const {
+    data:createdVariants,
+    error:variantError
+  } =
+    await supabase
+      .from("product_variants")
+      .insert(
+        variantRows
+      )
+      .select(
+        "id"
+      );
+
+
+  if(variantError){
+
+    throw variantError;
+
+  }
+
+
+  const links = [];
+
+
+  variantData.forEach(
+    (variant,index)=>{
+
+      const variantId =
+        createdVariants[index].id;
+
+
+      Object.entries(
+        variant.combination
+      ).forEach(
+        ([optionName,value])=>{
+
+          const optionValueId =
+            optionValueMap.get(
+
+              `${optionName.trim()}|||${String(value).trim()}`
+
+            );
+
+
+          if(optionValueId){
+
+            links.push({
+
+              variant_id:
+                variantId,
+
+              option_value_id:
+                optionValueId
+
+            });
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  if(links.length){
+
+    const {
+      error:linkError
+    } =
+      await supabase
+        .from(
+          "product_variant_option_values"
+        )
+        .insert(
+          links
+        );
+
+
+    if(linkError){
+
+      throw linkError;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   GUARDAR PRODUCTO
+========================================================= */
 
 productForm.addEventListener(
   "submit",
@@ -1808,19 +3050,54 @@ productForm.addEventListener(
 
     event.preventDefault();
 
+
+    if(saveProductBtn.disabled){
+
+      return;
+
+    }
+
+
+    saveProductBtn.disabled =
+      true;
+
+
     showFormMessage(
-      "Guardando..."
+      "Guardando producto..."
     );
 
 
     try{
+
+      const variantData =
+        collectFormVariants();
+
+
+      const validOptions =
+        getValidOptions();
+
+
+      if(
+        validOptions.length
+        &&
+        !variantData.length
+      ){
+
+        throw new Error(
+          "Hay opciones definidas pero no se pudo generar ninguna variante."
+        );
+
+      }
+
 
       const file =
         imageFile.files[0];
 
 
       const imageUrl =
-        await uploadImage(file);
+        await uploadImage(
+          file
+        );
 
 
       const product = {
@@ -1833,21 +3110,15 @@ productForm.addEventListener(
 
         price:
           Number(
-            document
-              .getElementById("price")
-              .value
+            priceInput.value || 0
           ),
 
         category:
-          document
-            .getElementById("category")
-            .value,
+          category.value,
 
         stock:
           Number(
-            document
-              .getElementById("stock")
-              .value || 0
+            stockInput.value || 0
           ),
 
         offer:
@@ -1868,12 +3139,14 @@ productForm.addEventListener(
       };
 
 
-      let result;
+      let productId;
 
 
       if(editingId){
 
-        result =
+        const {
+          error
+        } =
           await supabase
             .from("products")
             .update(product)
@@ -1882,38 +3155,82 @@ productForm.addEventListener(
               editingId
             );
 
+
+        if(error){
+
+          throw error;
+
+        }
+
+
+        productId =
+          editingId;
+
+
+        /*
+          Primero eliminamos las variantes
+          y después las opciones.
+        */
+
+        await deleteExistingVariants(
+          productId
+        );
+
+
+        await deleteExistingOptions(
+          productId
+        );
+
+
       }else{
 
-        result =
+        const {
+          data,
+          error
+        } =
           await supabase
             .from("products")
             .insert(product)
-            .select()
+            .select("id")
             .single();
 
+
+        if(error){
+
+          throw error;
+
+        }
+
+
+        productId =
+          data.id;
+
       }
 
 
-      if(result.error){
+      /*
+        Guardamos primero las opciones.
+      */
 
-        throw result.error;
-
-      }
-
-
-      const productId =
-        editingId
-          ? editingId
-          : result.data.id;
+      const optionValueMap =
+        await saveOptions(
+          productId
+        );
 
 
-      await saveOptions(
-        productId
+      /*
+        Después guardamos las variantes.
+      */
+
+      await saveVariants(
+        productId,
+        variantData,
+        optionValueMap
       );
 
 
       showFormMessage(
-        "Producto guardado correctamente."
+        "Producto y variantes guardados correctamente."
       );
 
 
@@ -1923,6 +3240,8 @@ productForm.addEventListener(
 
       options = [];
 
+      loadedVariantData = [];
+
 
       productForm.reset();
 
@@ -1931,6 +3250,10 @@ productForm.addEventListener(
 
       variantsContainer.innerHTML =
         "";
+
+      variantsSummary.classList.add(
+        "hide"
+      );
 
 
       preview.style.display =
@@ -1942,23 +3265,40 @@ productForm.addEventListener(
 
       setTimeout(
         ()=>{
+
           formBox
             .classList
             .add("hide");
+
         },
-        700
+        900
       );
 
 
     }catch(error){
 
-      console.error(error);
+      console.error(
+        "ERROR GUARDANDO PRODUCTO:",
+        error
+      );
+
 
       showFormMessage(
         "Error: "
-        + error.message,
+        +
+        (
+          error?.message
+          ||
+          String(error)
+        ),
         true
       );
+
+
+    }finally{
+
+      saveProductBtn.disabled =
+        false;
 
     }
 
@@ -1966,15 +3306,17 @@ productForm.addEventListener(
 );
 
 
-/*
-  ELIMINAR PRODUCTO
-*/
+/* =========================================================
+   ELIMINAR PRODUCTO
+========================================================= */
 
-async function deleteProduct(id){
+async function deleteProduct(
+  id
+){
 
   if(
     !confirm(
-      "¿Seguro que quieres eliminar este producto?"
+      "¿Seguro que quieres eliminar este producto y todas sus variantes?"
     )
   ){
 
@@ -1983,38 +3325,72 @@ async function deleteProduct(id){
   }
 
 
-  const {
-    error
-  } =
-    await supabase
-      .from("products")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
+  try{
+
+    /*
+      Primero eliminamos las relaciones
+      y variantes.
+    */
+
+    await deleteExistingVariants(
+      id
+    );
 
 
-  if(error){
+    /*
+      Después opciones.
+    */
+
+    await deleteExistingOptions(
+      id
+    );
+
+
+    /*
+      Finalmente producto.
+    */
+
+    const {
+      error
+    } =
+      await supabase
+        .from("products")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    await loadProducts();
+
+
+  }catch(error){
+
+    console.error(error);
+
 
     alert(
       "No se pudo eliminar: "
-      + error.message
+      +
+      error.message
     );
 
-    return;
-
   }
-
-
-  await loadProducts();
 
 }
 
 
-/*
-  CANCELAR
-*/
+/* =========================================================
+   CANCELAR
+========================================================= */
 
 document
   .getElementById("cancelBtn")
@@ -2026,9 +3402,14 @@ document
         .classList
         .add("hide");
 
+
       productForm.reset();
 
+
       options = [];
+
+      loadedVariantData = [];
+
 
       optionsContainer.innerHTML =
         "";
@@ -2036,20 +3417,28 @@ document
       variantsContainer.innerHTML =
         "";
 
+      variantsSummary.classList.add(
+        "hide"
+      );
+
+
       preview.style.display =
         "none";
+
 
       editingId = null;
 
       editingImage = null;
 
+      updateCategoryInfo();
+
     }
   );
 
 
-/*
-  PREVISUALIZACIÓN
-*/
+/* =========================================================
+   PREVISUALIZACIÓN FOTO
+========================================================= */
 
 imageFile.addEventListener(
   "change",
@@ -2061,8 +3450,20 @@ imageFile.addEventListener(
 
     if(!file){
 
-      preview.style.display =
-        "none";
+      if(editingImage){
+
+        preview.src =
+          editingImage;
+
+        preview.style.display =
+          "block";
+
+      }else{
+
+        preview.style.display =
+          "none";
+
+      }
 
       return;
 
@@ -2080,9 +3481,26 @@ imageFile.addEventListener(
 );
 
 
-/*
-  CERRAR SESIÓN
-*/
+/* =========================================================
+   VER TIENDA
+========================================================= */
+
+document
+  .getElementById("storeBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      window.location.href =
+        "index.html";
+
+    }
+  );
+
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
 
 document
   .getElementById("logoutBtn")
@@ -2098,9 +3516,11 @@ document
   );
 
 
-/*
-  ARRANQUE
-*/
+/* =========================================================
+   ARRANQUE
+========================================================= */
+
+updateCategoryInfo();
 
 await checkSession();
 
