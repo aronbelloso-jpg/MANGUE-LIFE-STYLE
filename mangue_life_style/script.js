@@ -48,19 +48,19 @@ async function loadProducts(){
     const data = await response.json();
 
     products = data.map(p => ({
-
-      id:p.id,
-      name:p.name || "",
-      cat:p.category || "Otros",
-      price:p.price == null ? null : Number(p.price),
-      old:p.old_price == null ? null : Number(p.old_price),
-      img:p.image_url || "assets/product-1.jpg",
-      offer:Boolean(p.offer),
-      desc:p.description || "",
-      stock:p.stock == null ? 0 : Number(p.stock)
-
+      id: p.id,
+      name: p.name || "",
+      cat: p.category || "Otros",
+      price: p.price == null ? null : Number(p.price),
+      old: p.old_price == null ? null : Number(p.old_price),
+      img: p.image_url || "assets/product-1.jpg",
+      offer: Boolean(p.offer),
+      desc: p.description || "",
+      talla: p.talla || p.size || "",
+      color: p.color || "",
+      genero: p.genero || p.gender || "",
+      stock: p.stock == null ? 0 : Number(p.stock)
     }));
-
     renderProducts();
     updateCart();
 
@@ -93,81 +93,48 @@ async function loadProducts(){
    PRODUCTOS
 ========================= */
 
-function renderProducts(){
+function renderProducts() {
+  const q = $("#searchInput").value.trim().toLowerCase();
 
-  const q =
-    $("#searchInput").value
-      .trim()
-      .toLowerCase();
+  let list = products.filter(p =>
+    (currentFilter === "all" || (currentFilter === "Oferta" ? p.offer : p.cat === currentFilter)) &&
+    (!q || `${p.name} ${p.cat} ${p.desc}`.toLowerCase().includes(q))
+  );
 
-  let list =
-    products.filter(p =>
-
-      (
-        currentFilter === "all" ||
-
-        (
-          currentFilter === "Oferta"
-          ? p.offer
-          : p.cat === currentFilter
-        )
-      )
-
-      &&
-
-      (
-        !q ||
-        `${p.name} ${p.cat} ${p.desc}`
-          .toLowerCase()
-          .includes(q)
-      )
-
-    );
-
-
-  const sort =
-    $("#sortSelect").value;
-
-
-  if(sort === "low"){
-
-    list.sort(
-      (a,b)=>
-        (a.price ?? Infinity) -
-        (b.price ?? Infinity)
-    );
-
+  const sort = $("#sortSelect") ? $("#sortSelect").value : "";
+  if (sort === "low") {
+    list.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+  }
+  if (sort === "high") {
+    list.sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
   }
 
-
-  if(sort === "high"){
-
-    list.sort(
-      (a,b)=>
-        (b.price ?? -Infinity) -
-        (a.price ?? -Infinity)
-    );
-
+  if ($("#resultText")) {
+    $("#resultText").textContent = `${list.length} producto${list.length !== 1 ? "s" : ""}`;
   }
 
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:50px;">
+        No encontramos productos con esa búsqueda.
+      </div>
+    `;
+    return;
+  }
 
-  $("#resultText").textContent =
-    `${list.length} producto${list.length !== 1 ? "s" : ""}`;
+  grid.innerHTML = list.map(p => {
+    // Generar línea de detalles (talla, color, género)
+    const detalles = [
+      p.talla ? `Talla: ${p.talla}` : '',
+      p.color ? `Color: ${p.color}` : '',
+      p.genero
+    ].filter(Boolean).join(' • ');
 
-
-  grid.innerHTML =
-    list.map(p => `
-
+    return `
       <article class="product-card">
-
-        ${
-          p.offer
-          ? '<span class="badge">OFERTA</span>'
-          : ''
-        }
-
+        ${p.offer ? '<span class="badge">OFERTA</span>' : ''}
+        
         <div class="pic">
-
           <img
             src="${p.img}"
             alt="${escapeHtml(p.name)}"
@@ -176,67 +143,35 @@ function renderProducts(){
             data-product-image="${p.id}"
             title="Tocar para ampliar"
           >
-
         </div>
 
         <div class="product-info">
-
-          <h3>
-            ${escapeHtml(p.name)}
-          </h3>
-
-          <p>
-            ${escapeHtml(p.desc)}
-          </p>
-
+          <h3>${escapeHtml(p.name)}</h3>
+          
+          <span class="category-tag">${p.cat}</span>
+          
+          ${detalles ? `<p class="product-details" style="font-size:0.85rem; color:#666; margin:4px 0;">${detalles}</p>` : ''}
+          
+          ${p.desc ? `<p class="description" style="font-size:0.9rem; color:#444;">${escapeHtml(p.desc)}</p>` : ''}
+          
           <div>
-
-            <span class="price">
-              ${money(p.price)}
-            </span>
-
-            ${
-              p.old
-              ?
-              `<span class="old">
-                ${money(p.old)}
-              </span>`
-              :
-              ""
-            }
-
+            <span class="price">${money(p.price)}</span>
+            ${p.old ? `<span class="old">${money(p.old)}</span>` : ''}
           </div>
 
           <button
             class="add"
             type="button"
-            onclick="addToCart(${p.id})"
+            onclick="addToCart('${p.id}')"
+            ${p.stock === 0 ? 'disabled' : ''}
           >
-            🛒 Añadir al carrito
+            ${p.stock > 0 ? '🛒 Añadir al carrito' : 'Agotado'}
           </button>
-
         </div>
-
       </article>
-
-    `).join("")
-
-    ||
-
-    `
-      <div
-        style="
-          grid-column:1/-1;
-          text-align:center;
-          padding:50px
-        "
-      >
-        No encontramos productos con esa búsqueda.
-      </div>
     `;
-
+  }).join('');
 }
-
 
 /* =========================
    VISOR DE IMÁGENES
