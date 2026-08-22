@@ -3181,7 +3181,7 @@ addNewCategoryFilters();
    SISTEMA DE CARRITO Y PEDIDOS POR WHATSAPP
 ========================================================= */
 
-let cart = JSON.parse(localStorage.getItem('mangue_cart')) || [];
+
 const WHATSAPP_PHONE = "240XXXXXXXXX"; // <-- Cambia esto por tu número de Guinea Ecuatorial
 
 window.addToCart = function(product, selectedOptions = {}) {
