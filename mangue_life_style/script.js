@@ -3177,53 +3177,5 @@ if (grid) {
 ========================================================= */
 
 addNewCategoryFilters();
-/* =========================================================
-   SISTEMA DE CARRITO Y PEDIDOS POR WHATSAPP
-========================================================= */
 
-
-const WHATSAPP_PHONE = "240XXXXXXXXX"; // <-- Cambia esto por tu número de Guinea Ecuatorial
-
-window.addToCart = function(product, selectedOptions = {}) {
-  const item = {
-    id: product.id,
-    name: product.name,
-    price: Number(product.price || 0),
-    options: selectedOptions,
-    quantity: 1
-  };
-  
-  cart.push(item);
-  localStorage.setItem('mangue_cart', JSON.stringify(cart));
-  alert(`"${product.name}" añadido al carrito.`);
-};
-
-window.sendOrderToWhatsApp = function() {
-  if (cart.length === 0) {
-    alert("El carrito está vacío.");
-    return;
-  }
-
-  let text = "¡Hola *Mangue Life Style*! Deseo realizar el siguiente pedido:\n\n";
-  let total = 0;
-
-  cart.forEach((item, index) => {
-    const subtotal = item.price * item.quantity;
-    total += subtotal;
-
-    const optionsText = Object.entries(item.options || {})
-      .map(([key, val]) => `${key}: ${val}`)
-      .join(', ');
-
-    text += `*${index + 1}. ${item.name}*\n`;
-    if (optionsText) text += `   Opciones: ${optionsText}\n`;
-    text += `   Cantidad: ${item.quantity}\n`;
-    text += `   Precio: ${subtotal} FCFA\n\n`;
-  });
-
-  text += `*TOTAL DEL PEDIDO: ${total} FCFA*`;
-
-  const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
-  window.open(waUrl, '_blank');
-};
 loadProducts();
