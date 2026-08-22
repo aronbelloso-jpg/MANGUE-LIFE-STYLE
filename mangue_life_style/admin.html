@@ -783,62 +783,39 @@ let loadedVariantData = [];
 ========================================================= */
 
 const categoryOptions = {
-
-  "Perfumes":[
-    "ML",
-    "Tipo",
-    "Intensidad"
+  "Perfumes": [
+    { name: "Tipo", values: ["Eau de Parfum", "Perfume", "Intense", "Eau de Toilette"] },
+    { name: "Tamaño", values: ["50ml", "100ml", "200ml"] }
   ],
-
-  "Ropa":[
-    "Talla",
-    "Color",
-    "Modelo"
+  "Ropa": [
+    { name: "Talla", values: ["S", "M", "L", "XL", "XXL"] },
+    { name: "Color", values: ["Negro", "Blanco", "Rojo", "Azul"] }
   ],
-
-  "Ropa de Gala":[
-    "Talla",
-    "Color",
-    "Modelo"
+  "Ropa de Gala": [
+    { name: "Talla", values: ["S", "M", "L", "XL"] },
+    { name: "Color", values: ["Negro", "Dorado", "Rojo"] }
   ],
-
-  "Ropa Casual":[
-    "Talla",
-    "Color",
-    "Modelo"
+  "Ropa Casual": [
+    { name: "Talla", values: ["S", "M", "L", "XL"] },
+    { name: "Color", values: ["Negro", "Blanco", "Azul"] }
   ],
-
-  "Pelucas":[
-    "Color",
-    "Talla",
-    "Modelo",
-    "Largo",
-    "Tipo"
+  "Zapatos": [
+    { name: "Talla", values: ["38", "39", "40", "41", "42", "43", "44"] },
+    { name: "Color", values: ["Negro", "Marrón", "Blanco"] }
   ],
-
-  "Zapatos":[
-    "Talla",
-    "Color",
-    "Modelo"
+  "Pelucas": [
+    { name: "Tipo", values: ["Lisas", "Rizadas", "Onduladas"] },
+    { name: "Largo", values: ['12"', '16"', '20"', '24"'] },
+    { name: "Color", values: ["Negro Natural", "Castaño", "Rubio"] }
   ],
-
-  "Bolsos y accesorios":[
-    "Tipo",
-    "Color",
-    "Modelo",
-    "Tamaño",
-    "Material"
+  "Bolsos y accesorios": [
+    { name: "Tipo", values: ["Bolso de mano", "Bandolera", "Mochila"] },
+    { name: "Color", values: ["Negro", "Marrón", "Beige"] }
   ],
-
-  "Cosméticos":[
-    "Tono",
-    "Tamaño",
-    "Presentación"
+  "Cosméticos": [
+    { name: "Presentación", values: ["Unidad", "Pack"] }
   ]
-
 };
-
-
 /* =========================================================
    DESCRIPCIÓN DE CATEGORÍAS
 ========================================================= */
@@ -966,33 +943,15 @@ function updateCategoryInfo(){
 
 
 function loadDefaultCategoryOptions(){
-
-  const names =
-    categoryOptions[
-      category.value
-    ] || [];
-
-
-  options = names.map(
-    name=>({
-
-      id:makeId(),
-
-      name,
-
-      values:[]
-
-    })
-  );
-
-
+  const defaults = categoryOptions[category.value] || [];
+  options = defaults.map(opt => ({
+    id: makeId(),
+    name: typeof opt === "string" ? opt : opt.name,
+    values: typeof opt === "string" ? [] : [...opt.values]
+  }));
   renderOptions();
-
   renderVariants();
-
 }
-
-
 /* =========================================================
    OPCIONES
 ========================================================= */
