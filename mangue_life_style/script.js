@@ -3177,5 +3177,24 @@ if (grid) {
 ========================================================= */
 
 addNewCategoryFilters();
+/* =========================================================
+   ACTUALIZAR TÍTULO SEGÚN CATEGORÍA
+========================================================= */
+function updateSectionTitle(filter) {
+  const titleEl = document.getElementById("titulo-seccion");
+  if (!titleEl) return;
 
+  if (!filter || filter === "all" || filter === "todos" || filter === "featured") {
+    titleEl.textContent = "Nuestros productos destacados";
+    return;
+  }
+
+  if (filter === "Oferta" || filter === "ofertas") {
+    titleEl.textContent = "Nuestras ofertas destacadas";
+    return;
+  }
+
+  const categoryName = filter.charAt(0).toUpperCase() + filter.slice(1);
+  titleEl.textContent = `Nuestros productos de ${categoryName}`;
+}
 loadProducts();
