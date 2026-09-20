@@ -354,15 +354,14 @@ function generateVariants(){
     $("variants").innerHTML="";
     return;
   }
-
 function renderVariants(){
   const box = $("variants");
   box.innerHTML = "";
   if (!variants.length) return;
 
-  // Añadimos una cabecera limpia con la cantidad de variantes
+  // Cabecera compacta con el total de combinaciones
   const headerInfo = document.createElement("div");
-  headerInfo.style.cssText = "margin-bottom: 10px; font-weight: bold; color: #444; font-size: 14px;";
+  headerInfo.style.cssText = "margin-bottom: 10px; font-weight: bold; color: #333; font-size: 14px;";
   headerInfo.textContent = `📋 Tabla de variantes (${variants.length} combinaciones generadas)`;
   box.appendChild(headerInfo);
 
@@ -390,9 +389,9 @@ function renderVariants(){
     
     tr.innerHTML = `
       <td style="padding: 8px; border: 1px solid #e2e8f0; font-size: 13px;">${attrs}</td>
-      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input value="${esc(v.sku)}" placeholder="SKU" style="padding: 6px; font-size: 13px;"></td>
-      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.price) || 0}" style="padding: 6px; font-size: 13px;"></td>
-      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.stock) || 0}" style="padding: 6px; font-size: 13px;"></td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input value="${esc(v.sku)}" placeholder="SKU" style="padding: 6px; font-size: 13px; width: 100%;"></td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.price) || 0}" style="padding: 6px; font-size: 13px; width: 100%;"></td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.stock) || 0}" style="padding: 6px; font-size: 13px; width: 100%;"></td>
     `;
     
     const ins = tr.querySelectorAll("input");
@@ -405,7 +404,7 @@ function renderVariants(){
   
   wrap.appendChild(table);
   box.appendChild(wrap);
-} 
+}
 async function uploadImage(file, productId){
   if(!file) return currentImageUrl || null;
   const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
