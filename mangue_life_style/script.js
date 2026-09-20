@@ -3278,3 +3278,73 @@ function updateSectionTitle(filter) {
   titleEl.textContent = `Nuestros productos de ${categoryName}`;
 }
 loadProducts();
+/* =========================================================
+   MEJORA: Mostrar opciones y variantes al cliente final
+========================================================= */
+async function openProductDetails(productId) {
+  try {
+    const { data: product, error } = await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .single();
+
+    if (error) throw error;
+
+    // Buscar las opciones guardadas en el panel de administración
+    const { data: options } = await supabaseClient
+      .from("product_options")
+      .select("id, name, product_option_values(id, value)")
+      .eq("product_id", productId);
+
+    let variantsHtml = "";
+    if (options && options.length > 0) {
+      variantsHtml = `<div class="product-options-selector" style="margin: 15px 0;">`;
+      options.forEach(opt => {
+        variantsHtml += `<label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">${escapeHtml(opt.name)}:</label>`;
+        variantsHtml += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">`;
+        
+        opt.product_option_values.forEach(val => {
+          variantsHtml += `
+            <button type="button" class="variant-chip" onclick="selectVariantOption(this, '${escapeHtml(opt.name)}', '${escapeHtml(val.value)}')" style="padding: 6px 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; font-size: 12px;">
+              ${escapeHtml(val.value)}
+            </button>
+          `;
+        });
+        variantsHtml += `</div>`;
+      });
+      variantsHtml += `</div>`;
+    }
+
+    const modalContainer = document.getElementById("productDetailsContent") || document.querySelector(".modal-card");
+    if (modalContainer) {
+      modalContainer.innerHTML = `
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2>${escapeHtml(product.name)}</h2>
+        <p class="product-price">${money(product.price)}</p>
+        <p>${escapeHtml(product.desciption || "")}</p>
+        ${variantsHtml}
+        <button class="gold-btn" onclick="addToCartWithSelectedVariant(${product.id})">Añadir al Carrito</button>
+      `;
+      document.querySelector(".modal").classList.add("open");
+    }
+
+  } catch (err) {
+    console.error("Error al cargar detalles del producto:", err);
+  }
+}
+
+function selectVariantOption(btn, optionName, optionValue) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.variant-chip').forEach(b => {
+    b.style.background = '#fff';
+    b.style.color = '#000';
+    b.style.borderColor = '#ccc';
+  });
+  btn.style.background = 'var(--gold)';
+  btn.style.color = '#111';
+  btn.style.borderColor = 'var(--gold)';
+  
+  window.selectedProductVariant = window.selectedProductVariant || {};
+  window.selectedProductVariant[optionName] = optionValue;
+}
