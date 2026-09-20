@@ -355,58 +355,57 @@ function generateVariants(){
     return;
   }
 
-  const result=[];
-  function walk(index,current){
-    if(index===opts.length){
-      result.push({
-        attributes:{...current},
-        sku:"",
-        price:Number($("price").value)||0,
-        stock:0
-      });
-      return;
-    }
-
-    const option=opts[index];
-    for(const value of option.values){
-      current[option.name]=value;
-      walk(index+1,current);
-    }
-  }
-
-  walk(0,{});
-  variants=result;
-  renderVariants();
-
-  msg("Se han generado "+result.length+" combinaciones.");
-}
-
 function renderVariants(){
-  const box=$("variants");
-  box.innerHTML="";
-  if(!variants.length) return;
-  const wrap=document.createElement("div");
-  wrap.className="table-wrap";
-  const table=document.createElement("table");
-  table.innerHTML="<thead><tr><th>Combinación</th><th>SKU</th><th>Precio</th><th>Stock</th></tr></thead><tbody></tbody>";
-  const tbody=table.querySelector("tbody");
-  variants.forEach((v,i)=>{
-    const tr=document.createElement("tr");
-    const attrs=Object.entries(v.attributes).map(([k,val])=>`${k}: ${val}`).join(" · ");
-    tr.innerHTML=`
-      <td><b>${esc(attrs)}</b></td>
-      <td><input value="${esc(v.sku)}" placeholder="SKU"></td>
-      <td><input type="number" min="0" step="1" value="${Number(v.price)||0}"></td>
-      <td><input type="number" min="0" step="1" value="${Number(v.stock)||0}"></td>`;
-    const ins=tr.querySelectorAll("input");
-    ins[0].oninput=e=>variants[i].sku=e.target.value;
-    ins[1].oninput=e=>variants[i].price=Number(e.target.value)||0;
-    ins[2].oninput=e=>variants[i].stock=Number(e.target.value)||0;
+  const box = $("variants");
+  box.innerHTML = "";
+  if (!variants.length) return;
+
+  // Añadimos una cabecera limpia con la cantidad de variantes
+  const headerInfo = document.createElement("div");
+  headerInfo.style.cssText = "margin-bottom: 10px; font-weight: bold; color: #444; font-size: 14px;";
+  headerInfo.textContent = `📋 Tabla de variantes (${variants.length} combinaciones generadas)`;
+  box.appendChild(headerInfo);
+
+  const wrap = document.createElement("div");
+  wrap.className = "table-wrap";
+  
+  const table = document.createElement("table");
+  table.style.cssText = "width: 100%; border-collapse: collapse; background: #fff;";
+  table.innerHTML = `
+    <thead>
+      <tr style="background: #f8fafc; text-align: left;">
+        <th style="padding: 10px; border: 1px solid #e2e8f0;">Combinación</th>
+        <th style="padding: 10px; border: 1px solid #e2e8f0; width: 130px;">SKU</th>
+        <th style="padding: 10px; border: 1px solid #e2e8f0; width: 120px;">Precio (FCFA)</th>
+        <th style="padding: 10px; border: 1px solid #e2e8f0; width: 90px;">Stock</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+  
+  const tbody = table.querySelector("tbody");
+  variants.forEach((v, i) => {
+    const tr = document.createElement("tr");
+    const attrs = Object.entries(v.attributes).map(([k, val]) => `${k}: <b>${val}</b>`).join(" · ");
+    
+    tr.innerHTML = `
+      <td style="padding: 8px; border: 1px solid #e2e8f0; font-size: 13px;">${attrs}</td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input value="${esc(v.sku)}" placeholder="SKU" style="padding: 6px; font-size: 13px;"></td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.price) || 0}" style="padding: 6px; font-size: 13px;"></td>
+      <td style="padding: 8px; border: 1px solid #e2e8f0;"><input type="number" min="0" step="1" value="${Number(v.stock) || 0}" style="padding: 6px; font-size: 13px;"></td>
+    `;
+    
+    const ins = tr.querySelectorAll("input");
+    ins[0].oninput = e => variants[i].sku = e.target.value;
+    ins[1].oninput = e => variants[i].price = Number(e.target.value) || 0;
+    ins[2].oninput = e => variants[i].stock = Number(e.target.value) || 0;
+    
     tbody.appendChild(tr);
   });
-  wrap.appendChild(table); box.appendChild(wrap);
-}
-
+  
+  wrap.appendChild(table);
+  box.appendChild(wrap);
+} 
 async function uploadImage(file, productId){
   if(!file) return currentImageUrl || null;
   const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
