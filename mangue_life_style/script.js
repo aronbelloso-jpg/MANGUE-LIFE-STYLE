@@ -13,6 +13,37 @@ let cart = JSON.parse(
 );
 
 let currentFilter = "all";
+// --- MEJORA: Sistema de retorno al menú principal ---
+function setupNavigationHeader() {
+  const headerContainer = document.querySelector("header") || $("#productGrid").parentElement;
+  if (!headerContainer || document.getElementById("backToMainBtn")) return;
+
+  const backBtn = document.createElement("button");
+  backBtn.id = "backToMainBtn";
+  backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Volver al Menú Principal';
+  backBtn.className = "btn-back-main";
+  backBtn.style.display = "none";
+  
+  backBtn.onclick = () => {
+    if (typeof filterProducts === "function") {
+      filterProducts("all");
+    }
+  };
+
+  headerContainer.prepend(backBtn);
+}
+
+function updateViewMode() {
+  const backBtn = document.getElementById("backToMainBtn");
+  if (!backBtn) return;
+  // Muestra el botón si NO estamos en "all"
+  backBtn.style.display = currentFilter !== "all" ? "inline-flex" : "none";
+}
+
+// Ejecutar al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+  setupNavigationHeader();
+});
 
 const money = n =>
   n == null
@@ -24,6 +55,55 @@ const money = n =>
 const $ = s => document.querySelector(s);
 
 const grid = $("#productGrid");
+// --- FUNCIONES DE SEGUNDA MANO Y RETORNO ---
+function filterProducts(category) {
+  currentFilter = category;
+  updateViewMode();
+
+  if (category === "all") {
+    renderProducts(products);
+  } else {
+    const filtered = products.filter(p => 
+      p.category === category || (category === 'segunda_mano' && p.is_second_hand)
+    );
+    renderProducts(filtered);
+  }
+}
+
+function renderProducts(productsToRender) {
+  if (!grid) return;
+
+  if (productsToRender.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
+        <i class="fas fa-box-open" style="font-size: 35px; margin-bottom: 10px;"></i>
+        <p>No hay productos disponibles en esta sección.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = productsToRender.map(product => {
+    const safeTitle = escapeHtml(product.name);
+    const safeImage = escapeHtml(product.image_url || 'assets/placeholder.jpg');
+    const isSecondHand = product.category === 'segunda_mano' || product.is_second_hand;
+
+    return `
+      <div class="product-card" data-id="${product.id}">
+        <div class="product-image-container" style="position: relative;">
+          <img src="${safeImage}" alt="${safeTitle}" loading="lazy" />
+          ${isSecondHand ? '<span style="position: absolute; top: 10px; left: 10px; background: #d97706; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">Segunda Mano</span>' : ''}
+        </div>
+        <div class="product-info">
+          <h3>${safeTitle}</h3>
+          <p class="product-price">${money(product.price)}</p>
+          <button class="btn-details" onclick="openProductDetails(${product.id})">Ver Detalles</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
 
 /* =========================================================
    SEGURIDAD
@@ -3198,3 +3278,73 @@ function updateSectionTitle(filter) {
   titleEl.textContent = `Nuestros productos de ${categoryName}`;
 }
 loadProducts();
+/* =========================================================
+   MEJORA: Mostrar opciones y variantes al cliente final
+========================================================= */
+async function openProductDetails(productId) {
+  try {
+    const { data: product, error } = await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .single();
+
+    if (error) throw error;
+
+    // Buscar las opciones guardadas en el panel de administración
+    const { data: options } = await supabaseClient
+      .from("product_options")
+      .select("id, name, product_option_values(id, value)")
+      .eq("product_id", productId);
+
+    let variantsHtml = "";
+    if (options && options.length > 0) {
+      variantsHtml = `<div class="product-options-selector" style="margin: 15px 0;">`;
+      options.forEach(opt => {
+        variantsHtml += `<label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">${escapeHtml(opt.name)}:</label>`;
+        variantsHtml += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">`;
+        
+        opt.product_option_values.forEach(val => {
+          variantsHtml += `
+            <button type="button" class="variant-chip" onclick="selectVariantOption(this, '${escapeHtml(opt.name)}', '${escapeHtml(val.value)}')" style="padding: 6px 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; font-size: 12px;">
+              ${escapeHtml(val.value)}
+            </button>
+          `;
+        });
+        variantsHtml += `</div>`;
+      });
+      variantsHtml += `</div>`;
+    }
+
+    const modalContainer = document.getElementById("productDetailsContent") || document.querySelector(".modal-card");
+    if (modalContainer) {
+      modalContainer.innerHTML = `
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2>${escapeHtml(product.name)}</h2>
+        <p class="product-price">${money(product.price)}</p>
+        <p>${escapeHtml(product.desciption || "")}</p>
+        ${variantsHtml}
+        <button class="gold-btn" onclick="addToCartWithSelectedVariant(${product.id})">Añadir al Carrito</button>
+      `;
+      document.querySelector(".modal").classList.add("open");
+    }
+
+  } catch (err) {
+    console.error("Error al cargar detalles del producto:", err);
+  }
+}
+
+function selectVariantOption(btn, optionName, optionValue) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.variant-chip').forEach(b => {
+    b.style.background = '#fff';
+    b.style.color = '#000';
+    b.style.borderColor = '#ccc';
+  });
+  btn.style.background = 'var(--gold)';
+  btn.style.color = '#111';
+  btn.style.borderColor = 'var(--gold)';
+  
+  window.selectedProductVariant = window.selectedProductVariant || {};
+  window.selectedProductVariant[optionName] = optionValue;
+}
