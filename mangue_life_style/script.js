@@ -13,6 +13,37 @@ let cart = JSON.parse(
 );
 
 let currentFilter = "all";
+// --- MEJORA: Sistema de retorno al menú principal ---
+function setupNavigationHeader() {
+  const headerContainer = document.querySelector("header") || $("#productGrid").parentElement;
+  if (!headerContainer || document.getElementById("backToMainBtn")) return;
+
+  const backBtn = document.createElement("button");
+  backBtn.id = "backToMainBtn";
+  backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Volver al Menú Principal';
+  backBtn.className = "btn-back-main";
+  backBtn.style.display = "none";
+  
+  backBtn.onclick = () => {
+    if (typeof filterProducts === "function") {
+      filterProducts("all");
+    }
+  };
+
+  headerContainer.prepend(backBtn);
+}
+
+function updateViewMode() {
+  const backBtn = document.getElementById("backToMainBtn");
+  if (!backBtn) return;
+  // Muestra el botón si NO estamos en "all"
+  backBtn.style.display = currentFilter !== "all" ? "inline-flex" : "none";
+}
+
+// Ejecutar al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+  setupNavigationHeader();
+});
 
 const money = n =>
   n == null
@@ -24,6 +55,55 @@ const money = n =>
 const $ = s => document.querySelector(s);
 
 const grid = $("#productGrid");
+// --- FUNCIONES DE SEGUNDA MANO Y RETORNO ---
+function filterProducts(category) {
+  currentFilter = category;
+  updateViewMode();
+
+  if (category === "all") {
+    renderProducts(products);
+  } else {
+    const filtered = products.filter(p => 
+      p.category === category || (category === 'segunda_mano' && p.is_second_hand)
+    );
+    renderProducts(filtered);
+  }
+}
+
+function renderProducts(productsToRender) {
+  if (!grid) return;
+
+  if (productsToRender.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
+        <i class="fas fa-box-open" style="font-size: 35px; margin-bottom: 10px;"></i>
+        <p>No hay productos disponibles en esta sección.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = productsToRender.map(product => {
+    const safeTitle = escapeHtml(product.name);
+    const safeImage = escapeHtml(product.image_url || 'assets/placeholder.jpg');
+    const isSecondHand = product.category === 'segunda_mano' || product.is_second_hand;
+
+    return `
+      <div class="product-card" data-id="${product.id}">
+        <div class="product-image-container" style="position: relative;">
+          <img src="${safeImage}" alt="${safeTitle}" loading="lazy" />
+          ${isSecondHand ? '<span style="position: absolute; top: 10px; left: 10px; background: #d97706; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">Segunda Mano</span>' : ''}
+        </div>
+        <div class="product-info">
+          <h3>${safeTitle}</h3>
+          <p class="product-price">${money(product.price)}</p>
+          <button class="btn-details" onclick="openProductDetails(${product.id})">Ver Detalles</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
 
 /* =========================================================
    SEGURIDAD
