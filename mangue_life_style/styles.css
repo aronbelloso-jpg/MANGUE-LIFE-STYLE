@@ -28,5 +28,39 @@
   .header-actions span { display:none; }
   .checkout-card { width:calc(100% - 28px); }
 }
+/* =========================================================
+   ESTILOS PROFESIONALES: BOTÓN RETORNO Y SEGUNDA MANO
+========================================================= */
+
+.btn-back-main {
+  background: #080808;
+  color: var(--gold2);
+  border: 1px solid var(--gold);
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.btn-back-main:hover {
+  background: var(--gold);
+  color: #080808;
+  transform: translateY(-2px);
+}
+
+/* Estilo elegante para la etiqueta de Segunda Mano en las tarjetas */
+.product-card .product-image-container, 
+.product-card .pic {
+  position: relative;
+}
+
+
 
 .admin-link{color:#d7a622;text-decoration:none;font-size:12px;font-weight:700;border:1px solid #7f641d;border-radius:16px;padding:7px 10px}
