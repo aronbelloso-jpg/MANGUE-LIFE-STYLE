@@ -170,5 +170,31 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Script integrado para actualizar la ubicación y teléfonos desde localStorage guardado en Admin
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedAddress = localStorage.getItem("store_address");
+      const savedPhone = localStorage.getItem("store_phone");
+
+      if (savedAddress) {
+        const addressTop = document.getElementById("storeAddressTop");
+        const addressFooter = document.getElementById("storeAddressFooter");
+        if (addressTop) addressTop.innerHTML = `📍 ${savedAddress}`;
+        if (addressFooter) addressFooter.innerHTML = `📍 ${savedAddress}`;
+      }
+
+      if (savedPhone) {
+        const phonesTop = document.getElementById("storePhonesTop");
+        if (phonesTop) {
+          phonesTop.innerHTML = `<a href="tel:${savedPhone}">${savedPhone}</a>`;
+        }
+        const whatsappBtn = document.querySelector(".whatsapp");
+        if (whatsappBtn) {
+          const cleanPhone = savedPhone.replace(/[^0-9]/g, "");
+          whatsappBtn.href = `https://wa.me/${cleanPhone}?text=Hola%20Mangue%20Life%20Style%2C%20quiero%20hacer%20una%20consulta.`;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
