@@ -3348,3 +3348,42 @@ function selectVariantOption(btn, optionName, optionValue) {
   window.selectedProductVariant = window.selectedProductVariant || {};
   window.selectedProductVariant[optionName] = optionValue;
 }
+// --- CARGAR DATOS DE LA TIENDA DESDE SUPABASE ---
+async function loadStoreSettings() {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/store_settings?select=*&id=eq.1`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    
+    if (!response.ok) return;
+    const data = await response.json();
+    
+    if (data && data.length > 0) {
+      const store = data[0];
+      
+      // Actualizar dirección en la barra superior y pie de página
+      const addressTop = document.getElementById("storeAddressTop");
+      const addressFooter = document.getElementById("storeAddressFooter");
+      if (addressTop && store.address) addressTop.textContent = `📍 ${store.address}`;
+      if (addressFooter && store.address) addressFooter.textContent = `📍 ${store.address}`;
+      
+      // Actualizar teléfono principal si existe
+      if (store.phone) {
+        const phonesTop = document.getElementById("storePhonesTop");
+        if (phonesTop) {
+          phonesTop.innerHTML = `<a href="tel:${store.phone}">${store.phone}</a>`;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("No se pudieron cargar los ajustes de la tienda:", error);
+  }
+}
+
+// Ejecutar al cargar la página principal
+document.addEventListener("DOMContentLoaded", () => {
+  loadStoreSettings();
+});
