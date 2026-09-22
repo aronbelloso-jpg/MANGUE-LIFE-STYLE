@@ -368,6 +368,29 @@
     id="appBox"
     class="box hide">
 
+    <!-- CONFIGURACIÓN DE TIENDA (DIRECCIÓN Y TELÉFONO) -->
+    <div class="box" style="background:#faf8f5; margin-top:0; margin-bottom:25px;">
+      <h3>Configuración general de la tienda</h3>
+      <p class="muted">Actualiza aquí el teléfono de contacto y la dirección que se muestran en la tienda.</p>
+      
+      <form id="storeConfigForm">
+        <div class="grid">
+          <label>
+            Teléfono / WhatsApp (Ej: +240 222...)
+            <input id="storePhone" type="text" placeholder="+240 ...">
+          </label>
+
+          <label>
+            Dirección física de la tienda
+            <input id="storeAddress" type="text" placeholder="Ej: Malabo, Guinea Ecuatorial">
+          </label>
+        </div>
+        <br>
+        <button class="gold" type="submit">Guardar configuración</button>
+        <span id="configMessage" class="small" style="margin-left: 10px;"></span>
+      </form>
+    </div>
+
     <div class="head">
 
       <div>
@@ -765,6 +788,18 @@ const stockInput =
 const saveProductBtn =
   document.getElementById("saveProductBtn");
 
+const storeConfigForm =
+  document.getElementById("storeConfigForm");
+
+const storePhoneInput =
+  document.getElementById("storePhone");
+
+const storeAddressInput =
+  document.getElementById("storeAddress");
+
+const configMessage =
+  document.getElementById("configMessage");
+
 
 /* =========================================================
    ESTADO
@@ -817,6 +852,7 @@ const categoryOptions = {
     { name: "Presentación", values: ["Unidad", "Pack"] }
   ]
 };
+
 /* =========================================================
    DESCRIPCIÓN DE CATEGORÍAS
 ========================================================= */
@@ -930,6 +966,33 @@ function makeId(){
 
 
 /* =========================================================
+   CONFIGURACIÓN DE TIENDA (LOCALSTORAGE)
+========================================================= */
+
+function loadStoreConfig(){
+  const savedPhone = localStorage.getItem("mangue_store_phone") || "";
+  const savedAddress = localStorage.getItem("mangue_store_address") || "";
+  
+  if(storePhoneInput) storePhoneInput.value = savedPhone;
+  if(storeAddressInput) storeAddressInput.value = savedAddress;
+}
+
+if(storeConfigForm){
+  storeConfigForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    localStorage.setItem("mangue_store_phone", storePhoneInput.value.trim());
+    localStorage.setItem("mangue_store_address", storeAddressInput.value.trim());
+    
+    configMessage.textContent = "¡Guardado con éxito!";
+    configMessage.className = "success small";
+    setTimeout(() => {
+      configMessage.textContent = "";
+    }, 3000);
+  });
+}
+
+
+/* =========================================================
    CATEGORÍA
 ========================================================= */
 
@@ -953,6 +1016,8 @@ function loadDefaultCategoryOptions(){
   renderOptions();
   renderVariants();
 }
+
+
 /* =========================================================
    OPCIONES
 ========================================================= */
@@ -1771,6 +1836,7 @@ async function checkSession(){
 
     updateCategoryInfo();
 
+    loadStoreConfig();
 
     await loadProducts();
 
