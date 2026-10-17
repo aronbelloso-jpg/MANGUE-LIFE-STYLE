@@ -85,25 +85,27 @@ function renderProducts(productsToRender) {
 
   grid.innerHTML = productsToRender.map(product => {
     const safeTitle = escapeHtml(product.name);
-    const safeImage = escapeHtml(product.image_url || 'assets/placeholder.jpg');
+    const safeImage = escapeHtml(product.img || product.image_url || 'assets/placeholder.jpg');
     const isSecondHand = product.category === 'segunda_mano' || product.is_second_hand;
 
     return `
-      <div class="product-card" data-id="${product.id}">
-        <div class="product-image-container" style="position: relative;">
-          <img src="${safeImage}" alt="${safeTitle}" loading="lazy" />
-          ${isSecondHand ? '<span style="position: absolute; top: 10px; left: 10px; background: #d97706; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">Segunda Mano</span>' : ''}
+      <div class="product-card" data-id="${product.id}" style="display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s;">
+        <div class="product-image-container" style="position: relative; width: 100%; height: 200px; background: #f8fafc; overflow: hidden;">
+          <img src="${safeImage}" alt="${safeTitle}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" />
+          ${isSecondHand ? '<span style="position: absolute; top: 10px; left: 10px; background: #d97706; color: white; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Segunda Mano</span>' : ''}
         </div>
-        <div class="product-info">
-          <h3>${safeTitle}</h3>
-          <p class="product-price">${money(product.price)}</p>
-          <button class="btn-details" onclick="openProductDetails(${product.id})">Ver Detalles</button>
+        <div class="product-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; gap: 12px;">
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">${escapeHtml(product.category || 'General')}</span>
+            <h3 style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 4px 0 8px 0; line-height: 1.4;">${safeTitle}</h3>
+            <p class="product-price" style="font-size: 17px; font-weight: 800; color: #d97706; margin: 0;">${money(product.price)}</p>
+          </div>
+          <button class="btn-details" onclick="openProductDetails(${product.id})" style="width: 100%; padding: 10px; background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; cursor: pointer; text-align: center; transition: background 0.2s;">Ver Detalles</button>
         </div>
       </div>
     `;
   }).join("");
 }
-
 
 /* =========================================================
    SEGURIDAD
