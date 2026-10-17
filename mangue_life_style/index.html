@@ -222,5 +222,16 @@
       }
     });
   </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const savedAddress = localStorage.getItem("store_address");
+    if (savedAddress) {
+      const addressFooter = document.getElementById("storeAddressFooter");
+      if (addressFooter) {
+        addressFooter.innerHTML = `📍 ${savedAddress}`;
+      }
+    }
+  });
+</script>
 </body>
 </html>
