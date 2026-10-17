@@ -63,4 +63,19 @@
 
 
 
-.admin-link{color:#d7a622;text-decoration:none;font-size:12px;font-weight:700;border:1px solid #7f641d;border-radius:16px;padding:7px 10px}
+.admin-link{color:#d7a622;text-decoration:none;font-size:12px;font-weight:700;border:1px solid #7f641d;border-radius:16px;padding:7px 10px} 
+.product-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.product-card .product-image-container, .product-card .pic {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
