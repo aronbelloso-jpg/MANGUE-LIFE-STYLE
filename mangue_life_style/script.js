@@ -3387,3 +3387,67 @@ async function loadStoreSettings() {
 document.addEventListener("DOMContentLoaded", () => {
   loadStoreSettings();
 });
+/* =========================================================
+   SISTEMA DE GALERÍA Y DETALLES CON MÚLTIPLES FOTOS
+========================================================= */
+
+function openProductDetails(productId) {
+  const product = products.find(p => String(p.id) === String(productId));
+  if (!product) return;
+
+  const modal = document.getElementById("productModal");
+  const content = document.getElementById("modalProductContent");
+  if (!modal || !content) return;
+
+  // Recopilar todas las imágenes disponibles (principal + galería de diferentes tomas)
+  let images = [product.img || product.image_url || 'assets/placeholder.jpg'];
+  
+  if (product.gallery && Array.isArray(product.gallery)) {
+    images = images.concat(product.gallery);
+  } else if (product.imagenes_extra && Array.isArray(product.imagenes_extra)) {
+    images = images.concat(product.imagenes_extra);
+  }
+
+  content.innerHTML = `
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img id="mainProductView" src="${images[0]}" alt="${escapeHtml(product.name)}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+    
+    <!-- Miniaturas de las diferentes tomas de fotos -->
+    <div style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px;">
+      ${images.map((img, index) => `
+        <img src="${img}" onclick="document.getElementById('mainProductView').src='${img}'" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid ${index === 0 ? '#d7a622' : '#e2e8f0'};" />
+      `).join('')}
+    </div>
+
+    <h2 style="font-size: 20px; margin-bottom: 8px; color: #171717;">${escapeHtml(product.name)}</h2>
+    <p style="font-size: 18px; font-weight: bold; color: #995c12; margin-bottom: 12px;">${money(product.price)}</p>
+    <p style="color: #666; font-size: 13px; margin-bottom: 20px; line-height: 1.5;">${escapeHtml(product.desc || product.descripcion || 'Sin descripción disponible.')}</p>
+    
+    <button onclick="addToCartFromModal(${product.id})" style="width: 100%; padding: 12px; background: var(--gold); color: #111; border: none; border-radius: 20px; font-weight: 700; cursor: pointer;">Añadir al carrito</button>
+  `;
+
+  modal.classList.add("open");
+}
+
+function addToCartFromModal(productId) {
+  const product = products.find(p => String(p.id) === String(productId));
+  if (!product) return;
+  
+  if (typeof addToCart === "function") {
+    addToCart(product);
+  }
+  
+  const modal = document.getElementById("productModal");
+  if (modal) modal.classList.remove("open");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("productModal");
+  const closeBtn = modal ? modal.querySelector(".modal-close") : null;
+
+  if (closeBtn && modal) {
+    closeBtn.onclick = () => { modal.classList.remove("open"); };
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.remove("open"); };
+  }
+});
